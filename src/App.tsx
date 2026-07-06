@@ -44,7 +44,7 @@ function TopNav({ toggleSidebar, isSidebarOpen, showSidebarToggle }: { toggleSid
     { name: 'Configuración', path: '/settings', icon: <Settings size={22} className="text-slate-600 dark:text-slate-300" />, roles: ['L1_CENTRAL', 'L0_STRATEGIC', 'L1_TACTICAL', 'L2_LOCAL', 'L3_OPERATIONAL'] }
   ];
 
-  const allowedApps = allApps.filter(app => app.roles.includes(user.level));
+  const allowedApps = allApps.filter(app => user.level === 'ADMIN' || app.roles.includes(user.level));
 
   return (
     <header className="bg-blue-900 text-white h-12 flex items-center justify-between px-3 shadow-md flex-shrink-0 z-40 relative">

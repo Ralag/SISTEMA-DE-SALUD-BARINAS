@@ -12,14 +12,19 @@ const COLORS = ['#0ea5e9', '#10b981', '#f43f5e', '#f59e0b', '#8b5cf6', '#64748b'
 interface DashboardType {
   id: string;
   name: string;
-  group?: string;
+  category: string;
+  programGroup?: string;
 }
 const ALL_DASHBOARDS: DashboardType[] = [
-  { id: 'general', name: 'Resumen Epidemiológico General' },
+  { id: 'general', name: 'Resumen Epidemiológico General', category: 'Generales' },
+  { id: 'red_comunal', name: 'Estadísticas Red Comunal', category: 'Red Comunal' },
+  { id: 'pai', name: 'Cobertura PAI e Inmunización', category: 'PAI' },
+  { id: 'epidemiologia', name: 'Vigilancia Epidemiológica', category: 'Epidemiología' },
   ...MPPS_PROGRAMS.filter(p => p.hasStats).map(p => ({
     id: p.id,
-    name: `Estadística: ${p.name}`,
-    group: p.group
+    name: p.name,
+    category: `Programa: ${p.group}`,
+    programGroup: p.group
   }))
 ];
 
@@ -68,7 +73,7 @@ export default function StatisticsHub() {
       if (d.id === dept) return true; // Match directo con el programa
       
       // Chequear si el departamento del usuario es el GRUPO del programa (ej: Coord CAREMT ve todos los de CAREMT)
-      if (d.group && d.group.toUpperCase() === dept) return true;
+      if (d.programGroup && d.programGroup.toUpperCase() === dept) return true;
       
       return false;
     });
@@ -192,11 +197,9 @@ export default function StatisticsHub() {
 
   // Group dashboards by category for the dropdown
   const groupedDashboards = useMemo(() => {
-    const groups: Record<string, DashboardType[]> = {
-      'Generales': [],
-    };
+    const groups: Record<string, DashboardType[]> = {};
     availableDashboards.forEach(d => {
-      const g = (d as any).group || 'Generales';
+      const g = d.category || 'Generales';
       if (!groups[g]) groups[g] = [];
       groups[g].push(d);
     });
