@@ -158,7 +158,7 @@ export default function DataEntryHub() {
   return (
     <div className="p-4 md:p-6 max-w-6xl mx-auto w-full h-full">
       <div className="mb-6">
-        <h1 className="text-2xl font-black text-slate-800 dark:text-slate-100 uppercase tracking-tight mb-2">Hub de Módulos (Data Entry)</h1>
+        <h1 className="text-2xl font-black font-display text-slate-800 dark:text-slate-100 uppercase tracking-tight mb-2">Hub de Módulos (Data Entry)</h1>
         <p className="text-sm text-slate-500 dark:text-slate-400 max-w-3xl leading-relaxed">
           Seleccione el programa de salud o formulario epidemiológico al que desea ingresar. 
           Los módulos mostrados están filtrados de acuerdo a sus credenciales de acceso institucional ({user.title}).

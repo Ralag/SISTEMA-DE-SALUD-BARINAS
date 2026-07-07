@@ -48,10 +48,10 @@ export default function LoginScreen() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-grid-pattern bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-4">
       <div className="bg-white dark:bg-slate-900 max-w-5xl w-full rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col md:flex-row h-[80vh]">
         
-        <div className="bg-blue-900 md:w-1/3 p-8 flex flex-col items-center justify-center text-center text-white flex-shrink-0">
+        <div className="bg-slate-900 md:w-1/3 p-8 flex flex-col items-center justify-center text-center text-white flex-shrink-0">
           <div className="w-20 h-20 bg-emerald-500 rounded-2xl flex items-center justify-center font-bold shadow-lg text-white mb-6">
             <Activity size={40} />
           </div>
@@ -100,7 +100,7 @@ export default function LoginScreen() {
                   <button
                     key={role.id}
                     onClick={() => setUser(role)}
-                    className="text-left border border-slate-200 dark:border-slate-700 p-4 rounded-xl hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all group flex items-start gap-3"
+                    className="text-left border border-slate-200 dark:border-slate-700 p-4 rounded-xl hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-[slate-900]/20 transition-all group flex items-start gap-3"
                   >
                     <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center group-hover:bg-blue-100 dark:group-hover:bg-blue-800 flex-shrink-0">
                       <Shield size={20} className="text-slate-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-300" />

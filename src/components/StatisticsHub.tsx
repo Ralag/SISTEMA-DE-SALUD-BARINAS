@@ -207,7 +207,7 @@ export default function StatisticsHub() {
   }, [availableDashboards]);
 
   return (
-    <div className="h-full flex flex-col bg-slate-100 dark:bg-slate-950 overflow-hidden relative">
+    <div className="h-full flex flex-col bg-slate-100 dark:bg-transparent overflow-hidden relative">
       {/* Top Action Bar (DHIS2 Style) */}
       <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-4 py-2 z-10 shrink-0 shadow-sm">
         <div className="flex items-center gap-3">

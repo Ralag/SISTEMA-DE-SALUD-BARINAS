@@ -1,5 +1,5 @@
 {
-  "name": "Sistema de Salud - Barinas",
+  "name": "Sistema Salas",
   "description": "Plataforma de recolección y consolidación epidemiológica (EPI-10, DSP04) para la red de salud del Estado Barinas.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]

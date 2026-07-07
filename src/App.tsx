@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { BrowserRouter, Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
-import { Activity, LayoutDashboard, Layers, Cloud, CloudOff, RefreshCw, HelpCircle, Users, Menu, X, BarChart3, LayoutGrid, Settings, Info, Search, Home, ClipboardList, Shield, MessageSquare } from 'lucide-react';
+import { Activity, LayoutDashboard, Layers, Cloud, CloudOff, RefreshCw, HelpCircle, Users, Menu, X, BarChart3, LayoutGrid, Settings, Info, Search, Home, ClipboardList, Shield, MessageSquare, Package, Kanban, FileText } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import Epi10Form from './components/Epi10Form';
 import Dsp04Form from './components/Dsp04Form';
@@ -13,6 +13,7 @@ import { useAppContext } from './context/AppContext';
 import OrgUnitTree from './components/OrgUnitTree';
 import { SYSTEM_ROLES, AccessLevel } from './types';
 import LoginScreen from './components/LoginScreen';
+import { LogisticsModule, HRModule, ProjectsModule, DocsModule } from './components/Placeholders';
 
 function TopNav({ toggleSidebar, isSidebarOpen, showSidebarToggle }: { toggleSidebar: () => void, isSidebarOpen: boolean, showSidebarToggle: boolean }) {
   const { syncStatus, user, setUser, setIsSettingsOpen, isAppsOpen, setIsAppsOpen } = useAppContext();
@@ -37,9 +38,12 @@ function TopNav({ toggleSidebar, isSidebarOpen, showSidebarToggle }: { toggleSid
   if (!user) return null;
 
   const allApps: { name: string, path: string, icon: React.ReactNode, roles: AccessLevel[] }[] = [
-    { name: 'Inicio', path: '/', icon: <Home size={22} className="text-slate-600 dark:text-slate-300" />, roles: ['L0_STRATEGIC', 'L1_CENTRAL', 'L1_TACTICAL', 'L2_LOCAL', 'L3_OPERATIONAL'] },
-    { name: 'Sala Situacional', path: '/stats', icon: <BarChart3 size={22} className="text-emerald-600" />, roles: ['L0_STRATEGIC', 'L1_CENTRAL', 'L1_TACTICAL'] },
-    { name: 'Estadística ASIC', path: '/stats', icon: <BarChart3 size={22} className="text-emerald-600" />, roles: ['L2_LOCAL', 'L3_OPERATIONAL'] },
+    { name: 'Workspace (Inicio)', path: '/', icon: <LayoutDashboard size={22} className="text-blue-600" />, roles: ['L0_STRATEGIC', 'L1_CENTRAL', 'L1_TACTICAL', 'L2_LOCAL', 'L3_OPERATIONAL'] },
+    { name: 'SIS.Core (DHIS2)', path: '/stats', icon: <Activity size={22} className="text-emerald-600" />, roles: ['L0_STRATEGIC', 'L1_CENTRAL', 'L1_TACTICAL', 'L2_LOCAL', 'L3_OPERATIONAL'] },
+    { name: 'Gestión ERP (Farmacia)', path: '/logistics', icon: <Package size={22} className="text-indigo-600" />, roles: ['L0_STRATEGIC', 'L1_CENTRAL', 'L1_TACTICAL', 'L2_LOCAL', 'L3_OPERATIONAL'] },
+    { name: 'Recursos Humanos', path: '/hr', icon: <Users size={22} className="text-amber-600" />, roles: ['L0_STRATEGIC', 'L1_CENTRAL', 'L1_TACTICAL'] },
+    { name: 'Proyectos', path: '/projects', icon: <Kanban size={22} className="text-rose-600" />, roles: ['L0_STRATEGIC', 'L1_CENTRAL', 'L1_TACTICAL'] },
+    { name: 'Comunicaciones', path: '/docs', icon: <FileText size={22} className="text-cyan-600" />, roles: ['L0_STRATEGIC', 'L1_CENTRAL', 'L1_TACTICAL', 'L2_LOCAL', 'L3_OPERATIONAL'] },
     { name: 'Módulos de Carga', path: '/modules', icon: <Layers size={22} className="text-blue-600" />, roles: ['L1_CENTRAL', 'L1_TACTICAL', 'L2_LOCAL', 'L3_OPERATIONAL'] },
     { name: 'Configuración', path: '/settings', icon: <Settings size={22} className="text-slate-600 dark:text-slate-300" />, roles: ['L1_CENTRAL', 'L0_STRATEGIC', 'L1_TACTICAL', 'L2_LOCAL', 'L3_OPERATIONAL'] }
   ];
@@ -47,27 +51,27 @@ function TopNav({ toggleSidebar, isSidebarOpen, showSidebarToggle }: { toggleSid
   const allowedApps = allApps.filter(app => user.level === 'ADMIN' || app.roles.includes(user.level));
 
   return (
-    <header className="bg-blue-900 text-white h-12 flex items-center justify-between px-3 shadow-md flex-shrink-0 z-40 relative">
+    <header className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 h-14 flex items-center justify-between px-4 shadow-sm border-b border-slate-200 dark:border-slate-800 flex-shrink-0 z-40 relative">
       <div className="flex items-center gap-3">
         {showSidebarToggle && (
-          <button onClick={toggleSidebar} className="p-1.5 hover:bg-blue-800 rounded transition-colors text-blue-100">
+          <button onClick={toggleSidebar} className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors text-slate-500">
             {isSidebarOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
         )}
         <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-          <div className="w-7 h-7 bg-emerald-500 rounded flex items-center justify-center font-bold shadow-sm text-white">
+          <div className="w-8 h-8 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 rounded-lg flex items-center justify-center font-bold shadow-sm">
             <Activity size={16} />
           </div>
           <div>
-            <h1 className="text-sm font-bold tracking-tight uppercase hidden sm:block">DHIS2 Barinas</h1>
-            <h1 className="text-sm font-bold tracking-tight uppercase sm:hidden">DHIS2</h1>
+            <h1 className="text-sm font-bold tracking-tight font-display hidden sm:block">Sistema Salas</h1>
+            <h1 className="text-sm font-bold tracking-tight font-display sm:hidden">Sistema Salas</h1>
           </div>
         </Link>
       </div>
       
       <div className="flex items-center gap-2">
         {/* Sync Status */}
-        <div className="hidden sm:flex items-center gap-1.5 bg-blue-950/40 px-2 py-1 rounded border border-blue-800/50 mr-2">
+        <div className="hidden sm:flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded border border-slate-200 dark:border-slate-700 mr-2">
           {syncStatus === 'syncing' ? (
             <RefreshCw size={12} className="text-amber-400 animate-spin" />
           ) : syncStatus === 'error' ? (
@@ -83,12 +87,12 @@ function TopNav({ toggleSidebar, isSidebarOpen, showSidebarToggle }: { toggleSid
         {/* User Profile & Role Switcher */}
         <div className="relative" ref={userMenuRef}>
           <div 
-            className="flex items-center gap-2 hover:bg-blue-800 px-2 py-1 rounded cursor-pointer transition-colors"
+            className="flex items-center gap-2 hover:bg-slate-100 dark:hover:bg-slate-800 px-2 py-1 rounded cursor-pointer transition-colors"
             onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
           >
             <div className="text-right hidden md:block">
-              <p className="text-xs font-bold uppercase leading-tight text-white">{user.name}</p>
-              <p className="text-[9px] text-blue-300 uppercase leading-tight">{user.title}</p>
+              <p className="text-xs font-bold uppercase leading-tight text-slate-800 dark:text-slate-100">{user.name}</p>
+              <p className="text-[9px] text-slate-500 uppercase leading-tight">{user.title}</p>
             </div>
             <div className="w-7 h-7 rounded-full bg-blue-700 border border-blue-600 flex items-center justify-center text-xs font-bold text-white shadow-sm">
               <Users size={14} />
@@ -211,7 +215,7 @@ function MainLayout() {
   }
 
   return (
-    <div className="bg-slate-50 dark:bg-slate-950 h-screen w-full flex flex-col font-sans text-slate-900 dark:text-slate-100 overflow-hidden select-none text-sm">
+    <div className="bg-slate-50 dark:bg-slate-950 bg-grid-pattern h-screen w-full flex flex-col font-sans text-slate-900 dark:text-slate-100 overflow-hidden select-none text-sm">
       <TopNav 
         toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} 
         isSidebarOpen={isSidebarOpen} 
@@ -243,7 +247,7 @@ function MainLayout() {
           )}
         </AnimatePresence>
 
-        <main className="flex-1 flex flex-col overflow-hidden bg-slate-50 dark:bg-slate-900 relative">
+        <main className="flex-1 flex flex-col overflow-hidden bg-transparent relative">
           <AnimatePresence mode="wait">
             <Routes location={location}>
               <Route path="/" element={<PageWrapper keyProp="home"><div className="flex-1 overflow-y-auto"><WelcomeHub /></div></PageWrapper>} />
@@ -252,6 +256,10 @@ function MainLayout() {
               <Route path="/module/epi10" element={<PageWrapper keyProp="epi10"><div className="flex-1 flex flex-col h-full p-2 sm:p-4 overflow-hidden"><Epi10Form /></div></PageWrapper>} />
               <Route path="/module/dsp04" element={<PageWrapper keyProp="dsp04"><div className="flex-1 flex flex-col h-full p-2 sm:p-4 overflow-hidden"><Dsp04Form /></div></PageWrapper>} />
               <Route path="/settings" element={<PageWrapper keyProp="settings"><div className="flex-1 overflow-y-auto p-4 md:p-6"><SettingsModule /></div></PageWrapper>} />
+              <Route path="/logistics" element={<PageWrapper keyProp="logistics"><div className="flex-1 overflow-y-auto"><LogisticsModule /></div></PageWrapper>} />
+              <Route path="/hr" element={<PageWrapper keyProp="hr"><div className="flex-1 overflow-y-auto"><HRModule /></div></PageWrapper>} />
+              <Route path="/projects" element={<PageWrapper keyProp="projects"><div className="flex-1 overflow-y-auto"><ProjectsModule /></div></PageWrapper>} />
+              <Route path="/docs" element={<PageWrapper keyProp="docs"><div className="flex-1 overflow-y-auto"><DocsModule /></div></PageWrapper>} />
             </Routes>
           </AnimatePresence>
         </main>

@@ -13,7 +13,7 @@ export default function SettingsModule() {
   const navigate = useNavigate();
 
   return (
-    <div className="w-full max-w-4xl mx-auto flex flex-col h-full bg-white dark:bg-slate-800 dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
+    <div className="w-full max-w-4xl mx-auto flex flex-col h-full bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
       <div className="flex items-center justify-between p-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
         <div className="flex items-center gap-3 text-slate-800 dark:text-slate-100">
           <div className="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center">
@@ -26,7 +26,7 @@ export default function SettingsModule() {
         </div>
         <button 
           onClick={() => navigate('/')}
-          className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-600 dark:text-slate-400 dark:text-slate-300 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors font-bold text-xs"
+          className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors font-bold text-xs"
         >
           <ArrowLeft size={16} /> Volver
         </button>
