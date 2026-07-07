@@ -1,4 +1,4 @@
-export type AccessLevel = 'ADMIN' | 'L0_STRATEGIC' | 'L1_CENTRAL' | 'L1_TACTICAL' | 'L2_LOCAL' | 'L3_OPERATIONAL';
+export type AccessLevel = 'ADMIN' | 'MODERATOR' | 'L0_STRATEGIC' | 'L1_CENTRAL' | 'L1_TACTICAL' | 'L2_LOCAL' | 'L3_OPERATIONAL';
 
 export type Department = string;
 
@@ -13,6 +13,13 @@ export interface UserRole {
 }
 
 export const SYSTEM_ROLES: Record<string, UserRole> = {
+  MODERADOR_INFORMATICA: {
+    id: 'mod_sistemas',
+    name: 'Moderador de Sistemas',
+    level: 'MODERATOR',
+    department: 'INFORMATICA',
+    title: 'Moderador de Plataforma'
+  },
   ADMIN: {
     id: 'admin_sys',
     name: 'Administrador del Sistema',

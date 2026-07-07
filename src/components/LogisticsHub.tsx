@@ -1,9 +1,11 @@
 import React from 'react';
 import { Package, Clock, PackageSearch, ChevronRight, Truck, Box, AlertOctagon } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
+import { useSaaSContext } from '../context/SaaSContext';
 
 export default function LogisticsHub() {
   const { user } = useAppContext();
+  const { config } = useSaaSContext();
 
   return (
     <div className="min-h-full flex flex-col bg-slate-50 dark:bg-slate-950 p-4 md:p-6 ">

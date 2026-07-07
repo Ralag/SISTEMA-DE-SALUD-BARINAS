@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Calendar as CalendarIcon, Users, UserX, UserCheck, Clock, FileText, CheckCircle2, Search, Filter } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
+import { useSaaSContext } from '../context/SaaSContext';
 
 export default function HRHub() {
   const { user } = useAppContext();
+  const { config } = useSaaSContext();
   const [currentMonth] = useState('Julio 2026');
 
   // Dummy calendar data

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Activity, MapPin, AlertTriangle, Download, Filter, ChevronRight, ActivitySquare, Crosshair, Calendar, Map, Thermometer, ShieldAlert, BarChart3, Edit3, Layers } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
+import { useSaaSContext } from '../context/SaaSContext';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
 // Mock data for Endemic Channel (Canal Endémico)
@@ -18,6 +19,7 @@ const endemicData = Array.from({ length: 52 }, (_, i) => {
 
 export default function EpidemiologyHub() {
   const { user } = useAppContext();
+  const { config } = useSaaSContext();
   const [activeTab, setActiveTab] = useState<'war_room' | 'stats' | 'data_entry'>('war_room');
 
   return (
@@ -27,7 +29,7 @@ export default function EpidemiologyHub() {
         <div>
           <h1 className="text-2xl font-black font-display text-slate-900 dark:text-white uppercase tracking-tight flex items-center gap-2">
             <Crosshair className="text-rose-600" size={28} strokeWidth={2.5} />
-            Sala de Guerra - Epidemiología
+            {config.modules.epidemiology?.name || 'Sala de Guerra - Epidemiología'}
           </h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm mt-1 font-medium tracking-wide uppercase">
             Vigilancia Activa Regional • MPPS Barinas

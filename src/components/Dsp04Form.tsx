@@ -16,7 +16,7 @@ const ALL_PRODUCTIVITY_ROWS = [
 ];
 
 export default function Dsp04Form() {
-  const { location, setSyncStatus, setLastSync, incrementDsp04, user } = useAppContext();
+  const { location, setSyncStatus, setLastSync, incrementDsp04, user, addToast } = useAppContext();
 
   const [activeSection, setActiveSection] = useState<'notificacion' | 'productividad' | 'programas'>('productividad'); // Default to productividad for demo
   
@@ -114,17 +114,17 @@ export default function Dsp04Form() {
         setSyncStatus('success');
         setLastSync(new Date());
         incrementDsp04();
-        setSuccessMessage(`Consolidado DSP04 sincronizado. Datos procesados: ${dataValues.length}`);
+        addToast(`Consolidado DSP04 sincronizado. Datos procesados: ${dataValues.length}`, 'success');
         setTimeout(() => setSuccessMessage(''), 3000);
         setTimeout(() => setSyncStatus('idle'), 3000);
       } else {
         setSyncStatus('error');
-        alert(`Error: ${response.message}`);
+        addToast(`Error: ${response.message}`, 'error');
       }
     } catch (error) {
       console.error(error);
       setSyncStatus('error');
-      alert('Error de conexión con el servidor DHIS2.');
+      addToast('Error de conexión con el servidor DHIS2.', 'error');
     } finally {
       setIsSubmitting(false);
     }

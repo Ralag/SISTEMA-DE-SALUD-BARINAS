@@ -2,10 +2,13 @@ import React, { useState } from 'react';
 import { UserRole, AccessLevel, Department } from '../types';
 import { Shield, ChevronRight, User, Lock, Mail, Building2, MapPin } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
+import { useSaaSContext } from '../context/SaaSContext';
 
 const ASICS = ['Guanapa', 'Obispos', 'Corazón de Jesús', 'Ramón Ignacio Méndez'];
 
 const NIVEL1_DEPARTMENTS = [
+  { id: 'INFORMATICA', name: 'Departamento de Informática (Moderadores)', group: 'A' },
+  { id: 'SISTEMAS', name: 'Sistemas (Administradores)', group: 'B' },
   { id: 'DES', name: 'Autoridad Única de Salud / Despacho', group: 'B' },
   { id: 'ESTADISTICA', name: 'CEIS - Estadística e Información en Salud', group: 'A' },
   { id: 'EPIDEMIOLOGIA', name: 'Epidemiología Regional', group: 'A' },
@@ -19,6 +22,7 @@ const NIVEL2_ROLES = [
 
 export default function LoginScreen() {
   const { setUser } = useAppContext();
+  const { config } = useSaaSContext();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -110,10 +114,10 @@ export default function LoginScreen() {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center p-4">
       <div className="mb-8 text-center">
         <div className="w-16 h-16 bg-[#1c557a] rounded-2xl flex items-center justify-center shadow-lg shadow-blue-900/20 mx-auto mb-4 border-2 border-[#2a7aae]">
-          <Shield size={32} className="text-white" />
+          {config.primaryLogoUrl ? <img src={config.primaryLogoUrl} alt="Logo" className="w-8 h-8 object-contain" /> : <Shield size={32} className="text-white" />}
         </div>
-        <h1 className="text-3xl font-black font-display text-slate-900 dark:text-white uppercase tracking-tight">SIS Barinas</h1>
-        <p className="text-slate-500 font-medium">Plataforma Gerencial de Salud Pública</p>
+        <h1 className="text-3xl font-black font-display text-slate-900 dark:text-white uppercase tracking-tight">{config.appName}</h1>
+        <p className="text-slate-500 font-medium">{config.loginSubtitle}</p>
       </div>
 
       <div className="bg-white dark:bg-slate-900 w-full max-w-md rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 overflow-hidden relative z-10">
@@ -177,6 +181,7 @@ export default function LoginScreen() {
               <div className="pt-2 border-t border-slate-200 dark:border-slate-800 mt-4">
                 <label className="block text-xs font-bold text-[#1c557a] dark:text-blue-400 uppercase mb-2 flex items-center gap-1"><Building2 size={14}/> Nivel Burocrático</label>
                 <div className="grid grid-cols-3 gap-2">
+                  <button type="button" onClick={() => setNivel('MODERATOR')} className={`p-2 text-xs font-bold rounded-lg border transition-all ${nivel === 'MODERATOR' ? 'bg-[#1c557a] text-white border-[#1c557a]' : 'bg-white text-slate-600 border-slate-200 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300 hover:border-blue-500'}`}>Moderador (TI)</button>
                   <button type="button" onClick={() => setNivel('ADMIN')} className={`p-2 text-xs font-bold rounded-lg border transition-all ${nivel === 'ADMIN' ? 'bg-[#1c557a] text-white border-[#1c557a]' : 'bg-white text-slate-600 border-slate-200 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300 hover:border-blue-500'}`}>Admin</button>
                   <button type="button" onClick={() => setNivel('L1_CENTRAL')} className={`p-2 text-xs font-bold rounded-lg border transition-all ${nivel === 'L1_CENTRAL' ? 'bg-[#1c557a] text-white border-[#1c557a]' : 'bg-white text-slate-600 border-slate-200 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300 hover:border-blue-500'}`}>Nivel 1 (Estadal)</button>
                   <button type="button" onClick={() => setNivel('L2_LOCAL')} className={`p-2 text-xs font-bold rounded-lg border transition-all ${nivel === 'L2_LOCAL' ? 'bg-[#1c557a] text-white border-[#1c557a]' : 'bg-white text-slate-600 border-slate-200 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300 hover:border-blue-500'}`}>Nivel 2 (ASIC)</button>

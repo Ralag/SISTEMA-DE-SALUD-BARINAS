@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { BarChart3, Download, Settings, Filter, Layers, ChevronRight, Users, Activity, MapPin, CheckCircle2, FileText, LayoutDashboard, Edit3, PieChart, Table, ShieldAlert, Menu, X } from 'lucide-react';
 import { Link, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
+import { useSaaSContext } from '../context/SaaSContext';
 import StatisticsHome from './dashboards/StatisticsHome';
 import DataQualityAudit from './dashboards/statistics/DataQualityAudit';
 import Dhis2Visualizer from './dashboards/statistics/Dhis2Visualizer';
@@ -11,6 +12,7 @@ import OrgUnitTree from './OrgUnitTree';
 
 export default function StatisticsHub() {
   const { user } = useAppContext();
+  const { config } = useSaaSContext();
   const location = useLocation();
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);

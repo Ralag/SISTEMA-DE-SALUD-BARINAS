@@ -42,7 +42,7 @@ const createEmptyRow = (): Epi10Row => ({
 });
 
 export default function Epi10Form() {
-  const { location, setLocation, setSyncStatus, incrementEpi10, setLastSync } = useAppContext();
+  const { location, setLocation, setSyncStatus, incrementEpi10, setLastSync, addToast } = useAppContext();
   
   const [rows, setRows] = useState<Epi10Row[]>([createEmptyRow(), createEmptyRow(), createEmptyRow()]);
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
@@ -67,7 +67,7 @@ export default function Epi10Form() {
   const handleSave = () => {
     const validRows = rows.filter(r => r.cie10 && r.age !== '' && r.gender);
     if (validRows.length === 0) {
-      alert('Debe completar al menos una fila con Diagnóstico, Edad y Sexo para guardar.');
+      addToast('Debe completar al menos una fila con Diagnóstico, Edad y Sexo para guardar.', 'error');
       return;
     }
     setSyncStatus('syncing');
@@ -75,7 +75,7 @@ export default function Epi10Form() {
       setSyncStatus('success');
       setLastSync(new Date());
       validRows.forEach(() => incrementEpi10());
-      alert(`Se guardaron exitosamente ${validRows.length} registro(s) EPI-10 para ${location.cpt}.`);
+      addToast(`Se guardaron exitosamente ${validRows.length} registro(s) EPI-10 para ${location.cpt}.`, 'success');
       setRows([createEmptyRow(), createEmptyRow(), createEmptyRow()]);
       setTimeout(() => setSyncStatus('idle'), 2000);
     }, 1500);

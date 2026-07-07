@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { Search, Syringe, ShieldCheck, Activity, Package, Users, Kanban, Calendar, FileText, Megaphone, CheckCircle2, AlertTriangle, TrendingUp, ChevronRight, Clock, Plus, Stethoscope, ClipboardList, BarChart3, MapPin, Layers } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
+import { useSaaSContext } from '../context/SaaSContext';
 
 
 
 export default function WelcomeHub() {
   const { user } = useAppContext();
+  const { config } = useSaaSContext();
   const [searchQuery, setSearchQuery] = useState('');
 
   if (!user) return null;
@@ -17,22 +19,25 @@ export default function WelcomeHub() {
   const isOperational = ['L3_OPERATIONAL'].includes(user.level);
 
   const allQuickAccess = [
-    { title: 'Epidemiología', subtitle: 'Análisis y Alertas', value: '3 Activas', icon: <Activity size={20} className="text-emerald-600" />, colorClass: 'emerald', to: '/epidemiology', linkText: 'Ver Sala de Guerra', dept: 'EPIDEMIOLOGIA' },
-    { title: 'Estadística (CEIS)', subtitle: 'Indicadores', value: '98%', icon: <BarChart3 size={20} className="text-cyan-600" />, colorClass: 'blue', to: '/stats', linkText: 'Ver CEIS', dept: 'ESTADISTICA' },
-    { title: 'Red de Atención', subtitle: 'Operatividad', value: '94%', icon: <Layers size={20} className="text-blue-600" />, colorClass: 'blue', to: '/networks', linkText: 'Monitorear Red', dept: 'RED_ATENCION' },
+    { title: config.modules.epidemiology?.name || 'Epidemiología', subtitle: config.modules.epidemiology?.description || 'Análisis y Alertas', value: '3 Activas', icon: <Activity size={20} className="text-emerald-600" />, colorClass: 'emerald', to: '/epidemiology', linkText: 'Ver Sala de Guerra', dept: 'EPIDEMIOLOGIA' },
+    { title: config.modules.stats?.name || 'Estadística (CEIS)', subtitle: config.modules.stats?.description || 'Indicadores', value: '98%', icon: <BarChart3 size={20} className="text-cyan-600" />, colorClass: 'blue', to: '/stats', linkText: 'Ver CEIS', dept: 'ESTADISTICA' },
+    { title: config.modules.networks?.name || 'Red de Atención', subtitle: config.modules.networks?.description || 'Operatividad', value: '94%', icon: <Layers size={20} className="text-blue-600" />, colorClass: 'blue', to: '/networks', linkText: 'Monitorear Red', dept: 'RED_ATENCION' },
     { title: 'Inmunización (PAI)', subtitle: 'Cobertura Mensual', value: '88.4%', icon: <Syringe size={20} className="text-indigo-600" />, colorClass: 'indigo', to: '/immunization', linkText: 'Ver Programa', dept: 'INMUNIZACION' },
-    { title: 'Contraloría', subtitle: 'Inspecciones SACS', value: '45', icon: <ShieldCheck size={20} className="text-rose-600" />, colorClass: 'rose', to: '/sacs', linkText: 'Ver Operativos', dept: 'SACS' },
-    { title: 'SEFAR', subtitle: 'Disponibilidad Almacén', value: '78%', icon: <Package size={20} className="text-amber-600" />, colorClass: 'amber', to: '/logistics', linkText: 'Ver Inventario', dept: 'SEFAR' },
+    { title: config.modules.sacs?.name || 'Contraloría', subtitle: config.modules.sacs?.description || 'Inspecciones SACS', value: '45', icon: <ShieldCheck size={20} className="text-rose-600" />, colorClass: 'rose', to: '/sacs', linkText: 'Ver Operativos', dept: 'SACS' },
+    { title: config.modules.logistics?.name || 'SEFAR', subtitle: config.modules.logistics?.description || 'Disponibilidad Almacén', value: '78%', icon: <Package size={20} className="text-amber-600" />, colorClass: 'amber', to: '/logistics', linkText: 'Ver Inventario', dept: 'SEFAR' },
+    { title: config.modules.hr?.name || 'Talento Humano', subtitle: config.modules.hr?.description || 'Personal y Guardias', value: '92%', icon: <Users size={20} className="text-orange-600" />, colorClass: 'amber', to: '/hr', linkText: 'Ver Nómina', dept: 'RRHH' },
+    { title: config.modules.programs?.name || 'Programas de Salud', subtitle: config.modules.programs?.description || 'Seguimiento de Cohortes', value: '14', icon: <Kanban size={20} className="text-purple-600" />, colorClass: 'indigo', to: '/programs', linkText: 'Ver Programas', dept: 'PROGRAMAS_SALUD' },
   ];
 
   const quickAccess = allQuickAccess.filter(app => {
     if (user?.level === 'ADMIN' || user?.level === 'L0_STRATEGIC' || user?.department === 'DES') return true;
-    return app.dept === user?.department || (app.dept === 'ESTADISTICA' && ['DIRECTOR_ASIC', 'ESTADISTICA_ASIC'].includes(user?.department));
+    if (app.dept === 'PROGRAMAS_SALUD' && ['TUBERCULOSIS', 'ITS_VIH', 'CAREMT', 'SALUD_FAMILIAR', 'SALUD_COMUNITARIA', 'MALARIOLOGIA', 'PROGRAMAS_SALUD'].includes(user?.department || '')) return true;
+    return app.dept === user?.department || (app.dept === 'ESTADISTICA' && ['DIRECTOR_ASIC', 'ESTADISTICA_ASIC'].includes(user?.department || ''));
   });
 
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto w-full space-y-6">
-      <HeaderCorporativo user={user} isOperational={isOperational} />
+      <HeaderCorporativo user={user} isOperational={isOperational} config={config} />
       
       {/* Quick Access Cards always visible */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -57,7 +62,7 @@ export default function WelcomeHub() {
   );
 }
 
-function HeaderCorporativo({ user, isOperational }: any) {
+function HeaderCorporativo({ user, isOperational, config }: any) {
   return (
     <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 dark:border-slate-800 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative overflow-hidden">
         {/* Decoration */}
@@ -84,7 +89,7 @@ function HeaderCorporativo({ user, isOperational }: any) {
             Sistema Salas
           </h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm mt-1 max-w-2xl">
-            Espacio de trabajo unificado. Bienvenido, <span className="font-bold text-slate-700 dark:text-slate-300">{user.name}</span>. 
+            {config.welcomeMessage} Bienvenido, <span className="font-bold text-slate-700 dark:text-slate-300">{user.name}</span>. 
             {isOperational && user.cptAccess ? ` Has ingresado al terminal del ${user.cptAccess}.` : ''}
           </p>
         </div>

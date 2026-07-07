@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { BrowserRouter, Routes, Route, Link, useLocation, useNavigate, Navigate } from 'react-router-dom';
-import { Activity, LayoutDashboard, Layers, Cloud, CloudOff, RefreshCw, HelpCircle, Users, Menu, X, BarChart3, LayoutGrid, Settings, Info, Search, Home, ClipboardList, Shield, MessageSquare, Package, Kanban, FileText, HeartPulse, ShieldCheck } from 'lucide-react';
+import { Activity, LayoutDashboard, Layers, Cloud, CloudOff, RefreshCw, HelpCircle, Users, Menu, X, BarChart3, LayoutGrid, Settings, Info, Search, Home, ClipboardList, Shield, MessageSquare, Package, MonitorSmartphone, Kanban, FileText, HeartPulse, ShieldCheck } from 'lucide-react';
 import { Edit3, PieChart, Table, ShieldAlert } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import Epi10Form from './components/Epi10Form';
@@ -15,13 +15,17 @@ import NetworksHub from './components/NetworksHub';
 import ProgramsHub from './components/ProgramsHub';
 import StatisticsHub from './components/StatisticsHub';
 import { HelpModal } from './components/Modals';
+import ToastContainer from './components/ToastContainer';
 import SettingsModule from './components/SettingsModule';
 import { useAppContext } from './context/AppContext';
+import AdminConfigDashboard from './components/dashboards/AdminConfigDashboard';
+import { useSaaSContext } from './context/SaaSContext';
 import { AccessLevel } from './types';
 import LoginScreen from './components/LoginScreen';
 
 function TopNav({ toggleSidebar, isSidebarOpen, showSidebarToggle }: { toggleSidebar: () => void, isSidebarOpen: boolean, showSidebarToggle: boolean }) {
   const { syncStatus, user, setUser, setIsSettingsOpen, isAppsOpen, setIsAppsOpen } = useAppContext();
+  const { config } = useSaaSContext();
   const navigate = useNavigate();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const appsMenuRef = useRef<HTMLDivElement>(null);
@@ -45,9 +49,10 @@ function TopNav({ toggleSidebar, isSidebarOpen, showSidebarToggle }: { toggleSid
   
 
   const allApps: { name: string, path: string, icon: React.ReactNode, roles: AccessLevel[], departments?: string[] }[] = [
-    { name: 'Workspace (Inicio)', path: '/', icon: <LayoutDashboard size={22} className="text-slate-600" />, roles: ['L0_STRATEGIC', 'L1_CENTRAL', 'L1_TACTICAL', 'L2_LOCAL', 'L3_OPERATIONAL'] },,
-    { name: 'Epidemiología', path: '/epidemiology', icon: <Activity size={22} className="text-emerald-600" />, roles: ['L1_CENTRAL', 'L2_LOCAL'], departments: ['EPIDEMIOLOGIA'] },
-    { name: 'Estadística (CEIS)', path: '/stats', icon: <BarChart3 size={22} className="text-cyan-600" />, roles: ['L1_CENTRAL', 'L2_LOCAL'], departments: ['ESTADISTICA', 'DIRECTOR_ASIC', 'ESTADISTICA_ASIC'] },
+    { name: 'Configuración SaaS', path: '/admin-saas', icon: <MonitorSmartphone size={22} className="text-indigo-600" />, roles: ['ADMIN', 'MODERATOR'], departments: ['SISTEMAS', 'INFORMATICA'] },
+    { name: config.modules.home?.name || 'Workspace (Inicio)', path: '/', icon: <LayoutDashboard size={22} className="text-slate-600" />, roles: ['L0_STRATEGIC', 'L1_CENTRAL', 'L1_TACTICAL', 'L2_LOCAL', 'L3_OPERATIONAL'] },
+    { name: config.modules.epidemiology?.name || 'Epidemiología', path: '/epidemiology', icon: <Activity size={22} className="text-emerald-600" />, roles: ['L1_CENTRAL', 'L2_LOCAL'], departments: ['EPIDEMIOLOGIA'] },
+    { name: config.modules.stats?.name || 'Estadística (CEIS)', path: '/stats', icon: <BarChart3 size={22} className="text-cyan-600" />, roles: ['L1_CENTRAL', 'L2_LOCAL'], departments: ['ESTADISTICA', 'DIRECTOR_ASIC', 'ESTADISTICA_ASIC'] },
     { name: 'EPI-10 (Morbilidad)', path: '/module/epi10', icon: <ClipboardList size={22} className="text-emerald-600" />, roles: ['L1_CENTRAL', 'L2_LOCAL', 'L3_OPERATIONAL'], departments: ['EPIDEMIOLOGIA', 'ESTADISTICA', 'ESTADISTICA_ASIC', 'DIRECTOR_ASIC'] },
     { name: 'DSP-04 (Gestión)', path: '/module/dsp04', icon: <FileText size={22} className="text-blue-600" />, roles: ['L1_CENTRAL', 'L2_LOCAL', 'L3_OPERATIONAL'], departments: ['ESTADISTICA', 'ESTADISTICA_ASIC', 'DIRECTOR_ASIC'] },
     { name: 'Inmunización (PAI)', path: '/immunization', icon: <HeartPulse size={22} className="text-indigo-600" />, roles: ['L1_TACTICAL', 'L2_LOCAL'], departments: ['INMUNIZACION'] },
@@ -80,11 +85,11 @@ function TopNav({ toggleSidebar, isSidebarOpen, showSidebarToggle }: { toggleSid
         )}
         <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           <div className="w-8 h-8 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 rounded-lg flex items-center justify-center font-bold shadow-sm">
-            <Activity size={16} />
+            {config.primaryLogoUrl ? <img src={config.primaryLogoUrl} alt="Logo" className="w-5 h-5 object-contain" /> : <Activity size={16} />}
           </div>
           <div>
-            <h1 className="text-sm font-bold tracking-tight font-display hidden sm:block">Sistema Salas</h1>
-            <h1 className="text-sm font-bold tracking-tight font-display sm:hidden">Sistema Salas</h1>
+            <h1 className="text-sm font-bold tracking-tight font-display hidden sm:block">{config.appName}</h1>
+            <h1 className="text-sm font-bold tracking-tight font-display sm:hidden">{config.appName}</h1>
           </div>
         </Link>
       </div>
@@ -193,6 +198,9 @@ function HomeRouter() {
   if (!user) return null;
 
   // Auto-redirect user to their specific hub based on department
+  if (user.level === 'MODERATOR') {
+    return <Navigate to="/admin-saas" replace />;
+  }
   if (user.department === 'ESTADISTICA' || user.department === 'DIRECTOR_ASIC' || user.department === 'ESTADISTICA_ASIC') {
     return <Navigate to="/stats" replace />;
   }
@@ -224,6 +232,7 @@ function HomeRouter() {
 
 function MainLayout() {
   const { user, setIsAppsOpen } = useAppContext();
+  const { config } = useSaaSContext();
   const [showHelpModal, setShowHelpModal] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   
@@ -262,6 +271,7 @@ function MainLayout() {
 
   return (
     <div className="bg-slate-50 dark:bg-slate-950 bg-grid-pattern h-screen w-full flex flex-col font-sans text-slate-900 dark:text-slate-100 overflow-hidden select-none text-sm">
+      <ToastContainer />
       <TopNav 
         toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} 
         isSidebarOpen={isSidebarOpen} 
@@ -283,6 +293,7 @@ function MainLayout() {
               <Route path="/programs" element={<PageWrapper keyProp="programs"><div className="h-full overflow-y-auto w-full"><ProgramsHub /></div></PageWrapper>} />
               <Route path="/module/epi10" element={<PageWrapper keyProp="epi10"><div className="h-full overflow-y-auto w-full p-2 sm:p-4"><Epi10Form /></div></PageWrapper>} />
               <Route path="/module/dsp04" element={<PageWrapper keyProp="dsp04"><div className="h-full overflow-y-auto w-full p-2 sm:p-4"><Dsp04Form /></div></PageWrapper>} />
+              <Route path="/admin-saas" element={<PageWrapper keyProp="admin-saas"><div className="h-full overflow-y-auto w-full"><AdminConfigDashboard /></div></PageWrapper>} />
               <Route path="/settings" element={<PageWrapper keyProp="settings"><div className="h-full overflow-y-auto w-full p-4 md:p-6"><SettingsModule /></div></PageWrapper>} />
             </Routes>
           </AnimatePresence>
@@ -292,7 +303,7 @@ function MainLayout() {
       {/* Footer / Mobile nav completely removed in favor of top Apps Menu */}
 
       <footer className="hidden md:flex bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 h-8 px-4 md:px-6 items-center justify-between text-[9px] font-bold text-slate-400 dark:text-slate-400 tracking-widest uppercase flex-shrink-0">
-        <div>SALUD BARINAS © {new Date().getFullYear()}</div>
+        <div>{config.appName?.toUpperCase() || 'SALUD BARINAS'} © {new Date().getFullYear()}</div>
         <div className="flex gap-4 md:gap-6">
           <button 
             onClick={() => setShowHelpModal(true)}

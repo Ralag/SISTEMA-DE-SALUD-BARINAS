@@ -4,6 +4,13 @@ import { UserRole, SYSTEM_ROLES } from '../types';
 type SyncStatus = 'idle' | 'syncing' | 'success' | 'error';
 export type UIScale = 'compact' | 'normal' | 'large';
 export type ThemeMode = 'light' | 'dark' | 'system';
+export type ToastType = 'success' | 'error' | 'info' | 'warning';
+export interface ToastMessage {
+  id: string;
+  type: ToastType;
+  message: string;
+}
+
 export type ThemeColor = 'blue' | 'emerald' | 'indigo' | 'rose';
 
 interface Location {
@@ -51,12 +58,26 @@ interface AppState {
   };
   incrementEpi10: () => void;
   incrementDsp04: () => void;
+  toasts: ToastMessage[];
+  addToast: (message: string, type?: ToastType) => void;
+  removeToast: (id: string) => void;
 }
 
 const AppContext = createContext<AppState | undefined>(undefined);
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<UserRole | null>(null); // Default to null for login screen
+  const [toasts, setToasts] = useState<ToastMessage[]>([]);
+  const addToast = (message: string, type: ToastType = 'info') => {
+    const id = Math.random().toString(36).substring(2, 11);
+    setToasts(prev => [...prev, { id, type, message }]);
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id));
+    }, 5000);
+  };
+  const removeToast = (id: string) => {
+    setToasts(prev => prev.filter(t => t.id !== id));
+  };
 
   const [location, setLocation] = useState<Location>({
     state: 'Estado Barinas',
@@ -135,7 +156,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       themeMode, setThemeMode,
       themeColor, setThemeColor,
       isAppsOpen, setIsAppsOpen,
-      stats, incrementEpi10, incrementDsp04
+      stats, incrementEpi10, incrementDsp04, toasts, addToast, removeToast
     }}>
       {children}
     </AppContext.Provider>
