@@ -20,7 +20,7 @@ export default function StatisticsHome() {
               Accesos Rápidos CEIS
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Link to="/stats" className="group p-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl hover:border-blue-500 transition-all shadow-sm">
+              <Link to="/stats/data-entry" className="group p-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl hover:border-blue-500 transition-all shadow-sm">
                 <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mb-3">
                   <TrendingUp className="text-blue-600 dark:text-blue-400" />
                 </div>
@@ -28,7 +28,7 @@ export default function StatisticsHome() {
                 <p className="text-xs text-slate-500 mt-1">Ir al módulo principal de visualización de datos de morbilidad.</p>
               </Link>
 
-              <Link to="/stats" className="group p-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl hover:border-blue-500 transition-all shadow-sm">
+              <Link to="/stats/visualizer" className="group p-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl hover:border-blue-500 transition-all shadow-sm">
                 <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center mb-3">
                   <FileText className="text-indigo-600 dark:text-indigo-400" />
                 </div>

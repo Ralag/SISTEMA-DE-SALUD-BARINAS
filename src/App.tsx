@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { BrowserRouter, Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link, useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { Activity, LayoutDashboard, Layers, Cloud, CloudOff, RefreshCw, HelpCircle, Users, Menu, X, BarChart3, LayoutGrid, Settings, Info, Search, Home, ClipboardList, Shield, MessageSquare, Package, Kanban, FileText, HeartPulse, ShieldCheck } from 'lucide-react';
+import { Edit3, PieChart, Table, ShieldAlert } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import Epi10Form from './components/Epi10Form';
 import Dsp04Form from './components/Dsp04Form';
@@ -9,7 +10,6 @@ import EpidemiologyHub from './components/EpidemiologyHub';
 import LogisticsHub from './components/LogisticsHub';
 import HRHub from './components/HRHub';
 import SACSHub from './components/SACSHub';
-import AuthorityHub from './components/AuthorityHub';
 import ImmunizationHub from './components/ImmunizationHub';
 import NetworksHub from './components/NetworksHub';
 import ProgramsHub from './components/ProgramsHub';
@@ -17,8 +17,7 @@ import StatisticsHub from './components/StatisticsHub';
 import { HelpModal } from './components/Modals';
 import SettingsModule from './components/SettingsModule';
 import { useAppContext } from './context/AppContext';
-import OrgUnitTree from './components/OrgUnitTree';
-import { SYSTEM_ROLES, AccessLevel } from './types';
+import { AccessLevel } from './types';
 import LoginScreen from './components/LoginScreen';
 
 function TopNav({ toggleSidebar, isSidebarOpen, showSidebarToggle }: { toggleSidebar: () => void, isSidebarOpen: boolean, showSidebarToggle: boolean }) {
@@ -46,18 +45,24 @@ function TopNav({ toggleSidebar, isSidebarOpen, showSidebarToggle }: { toggleSid
   
 
   const allApps: { name: string, path: string, icon: React.ReactNode, roles: AccessLevel[], departments?: string[] }[] = [
-    { name: 'Workspace (Inicio)', path: '/', icon: <LayoutDashboard size={22} className="text-slate-600" />, roles: ['L0_STRATEGIC', 'L1_CENTRAL', 'L1_TACTICAL', 'L2_LOCAL', 'L3_OPERATIONAL'] },
+    { name: 'Workspace (Inicio)', path: '/', icon: <LayoutDashboard size={22} className="text-slate-600" />, roles: ['L0_STRATEGIC', 'L1_CENTRAL', 'L1_TACTICAL', 'L2_LOCAL', 'L3_OPERATIONAL'] },,
     { name: 'Epidemiología', path: '/epidemiology', icon: <Activity size={22} className="text-emerald-600" />, roles: ['L1_CENTRAL', 'L2_LOCAL'], departments: ['EPIDEMIOLOGIA'] },
     { name: 'Estadística (CEIS)', path: '/stats', icon: <BarChart3 size={22} className="text-cyan-600" />, roles: ['L1_CENTRAL', 'L2_LOCAL'], departments: ['ESTADISTICA', 'DIRECTOR_ASIC', 'ESTADISTICA_ASIC'] },
+    { name: 'EPI-10 (Morbilidad)', path: '/module/epi10', icon: <ClipboardList size={22} className="text-emerald-600" />, roles: ['L1_CENTRAL', 'L2_LOCAL', 'L3_OPERATIONAL'], departments: ['EPIDEMIOLOGIA', 'ESTADISTICA', 'ESTADISTICA_ASIC', 'DIRECTOR_ASIC'] },
+    { name: 'DSP-04 (Gestión)', path: '/module/dsp04', icon: <FileText size={22} className="text-blue-600" />, roles: ['L1_CENTRAL', 'L2_LOCAL', 'L3_OPERATIONAL'], departments: ['ESTADISTICA', 'ESTADISTICA_ASIC', 'DIRECTOR_ASIC'] },
     { name: 'Inmunización (PAI)', path: '/immunization', icon: <HeartPulse size={22} className="text-indigo-600" />, roles: ['L1_TACTICAL', 'L2_LOCAL'], departments: ['INMUNIZACION'] },
     { name: 'Programas de Salud', path: '/programs', icon: <HeartPulse size={22} className="text-purple-600" />, roles: ['L1_TACTICAL', 'L2_LOCAL'], departments: ['TUBERCULOSIS', 'ITS_VIH', 'CAREMT', 'SALUD_FAMILIAR', 'SALUD_COMUNITARIA', 'MALARIOLOGIA', 'PROGRAMAS_SALUD'] },
     { name: 'SEFAR (Logística)', path: '/logistics', icon: <Package size={22} className="text-blue-600" />, roles: ['L1_CENTRAL', 'L2_LOCAL'], departments: ['SEFAR'] },
     { name: 'Recursos Humanos', path: '/hr', icon: <Users size={22} className="text-amber-600" />, roles: ['L1_CENTRAL'], departments: ['RRHH'] },
     { name: 'Contraloría (SACS)', path: '/sacs', icon: <ShieldCheck size={22} className="text-rose-600" />, roles: ['L1_CENTRAL'], departments: ['SACS'] },
     { name: 'Redes de Atención', path: '/networks', icon: <Layers size={22} className="text-blue-600" />, roles: ['L1_CENTRAL'], departments: ['RED_ATENCION'] },
-    { name: 'Configuración', path: '/settings', icon: <Settings size={22} className="text-slate-600 dark:text-slate-300" />, roles: ['L1_CENTRAL', 'L0_STRATEGIC', 'L1_TACTICAL', 'L2_LOCAL', 'L3_OPERATIONAL'] }
+    { name: 'Configuración', path: '/settings', icon: <Settings size={22} className="text-slate-600 dark:text-slate-300" />, roles: ['L1_CENTRAL', 'L0_STRATEGIC', 'L1_TACTICAL', 'L2_LOCAL', 'L3_OPERATIONAL'] },
+  
+    { name: 'Carga de Datos (SIS)', path: '/stats/data-entry', icon: <Edit3 size={22} className="text-indigo-600" />, roles: ['L1_CENTRAL', 'L2_LOCAL', 'L3_OPERATIONAL'], departments: ['ESTADISTICA', 'ESTADISTICA_ASIC', 'DIRECTOR_ASIC'] },
+    { name: 'Visualizador DHIS2', path: '/stats/visualizer', icon: <PieChart size={22} className="text-emerald-600" />, roles: ['L1_CENTRAL', 'L2_LOCAL'], departments: ['ESTADISTICA', 'EPIDEMIOLOGIA', 'ESTADISTICA_ASIC', 'DIRECTOR_ASIC'] },
+    { name: 'Reportes Estándar', path: '/stats/reports', icon: <Table size={22} className="text-blue-600" />, roles: ['L1_CENTRAL', 'L2_LOCAL'], departments: ['ESTADISTICA', 'EPIDEMIOLOGIA', 'ESTADISTICA_ASIC', 'DIRECTOR_ASIC'] },
+    { name: 'Auditoría', path: '/stats/audit', icon: <ShieldAlert size={22} className="text-rose-600" />, roles: ['L1_CENTRAL'], departments: ['ESTADISTICA'] },
   ];
-
   const allowedApps = allApps.filter(app => {
     if (user.level === 'ADMIN' || user.level === 'L0_STRATEGIC' || user.department === 'DES') return true;
     if (!app.roles.includes(user.level)) return false;
@@ -133,7 +138,7 @@ function TopNav({ toggleSidebar, isSidebarOpen, showSidebarToggle }: { toggleSid
               
               <div className="p-3 border-b border-slate-100 dark:border-slate-800">
                 <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 px-1">Módulos Disponibles</p>
-                <div className="grid grid-cols-3 gap-2 max-h-64 overflow-y-auto">
+                <div className="grid grid-cols-3 gap-2 max-h-96 overflow-y-auto custom-scrollbar">
                   {allowedApps.map((app, idx) => (
                     <Link 
                       key={idx} 
@@ -183,6 +188,37 @@ const PageWrapper = ({ children, keyProp }: { children: React.ReactNode, keyProp
 );
 
 function HomeRouter() {
+  const { user } = useAppContext();
+  
+  if (!user) return null;
+
+  // Auto-redirect user to their specific hub based on department
+  if (user.department === 'ESTADISTICA' || user.department === 'DIRECTOR_ASIC' || user.department === 'ESTADISTICA_ASIC') {
+    return <Navigate to="/stats" replace />;
+  }
+  if (user.department === 'EPIDEMIOLOGIA') {
+    return <Navigate to="/epidemiology" replace />;
+  }
+  if (user.department === 'INMUNIZACION') {
+    return <Navigate to="/immunization" replace />;
+  }
+  if (user.department === 'SEFAR') {
+    return <Navigate to="/logistics" replace />;
+  }
+  if (user.department === 'RRHH') {
+    return <Navigate to="/hr" replace />;
+  }
+  if (user.department === 'SACS') {
+    return <Navigate to="/sacs" replace />;
+  }
+  if (user.department === 'RED_ATENCION') {
+    return <Navigate to="/networks" replace />;
+  }
+  if (['TUBERCULOSIS', 'ITS_VIH', 'CAREMT', 'SALUD_FAMILIAR', 'SALUD_COMUNITARIA', 'MALARIOLOGIA', 'PROGRAMAS_SALUD'].includes(user.department)) {
+    return <Navigate to="/programs" replace />;
+  }
+
+  // Fallback to WelcomeHub for Admins or undefined roles
   return <WelcomeHub />;
 }
 
@@ -195,7 +231,7 @@ function MainLayout() {
   const navigate = useNavigate();
   const currentPath = location.pathname;
   
-  const showSidebar = currentPath.startsWith('/stats');
+  const showSidebar = false; // Sidebar removed from global layout
 
   // Auto-close sidebar on mobile when navigating away from stats
   useEffect(() => {
@@ -233,45 +269,21 @@ function MainLayout() {
       />
 
       <div className="flex flex-1 overflow-hidden flex-col md:flex-row relative">
-        {/* Mobile Sidebar Overlay */}
-        {showSidebar && isSidebarOpen && (
-          <div 
-            className="md:hidden absolute inset-0 bg-slate-900/50 z-20"
-            onClick={() => setIsSidebarOpen(false)}
-          />
-        )}
-        
-        {/* Left DHIS2-style Organization Unit Tree - Only in Stats */}
-        <AnimatePresence>
-          {showSidebar && isSidebarOpen && (
-            <motion.div 
-              initial={{ width: 0, opacity: 0 }}
-              animate={{ width: 320, opacity: 1 }}
-              exit={{ width: 0, opacity: 0 }}
-              className="absolute md:relative z-30 h-full shadow-lg md:shadow-sm border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900"
-            >
-              <div className="w-[320px] h-full overflow-hidden">
-                <OrgUnitTree />
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
         <main className="flex-1 flex flex-col overflow-hidden bg-transparent relative">
           <AnimatePresence mode="wait">
             <Routes location={location}>
-              <Route path="/" element={<PageWrapper keyProp="home"><div className="flex-1 flex flex-col overflow-hidden h-full"><HomeRouter /></div></PageWrapper>} />
-              <Route path="/epidemiology" element={<PageWrapper keyProp="epidemiology"><div className="flex-1 overflow-y-auto"><EpidemiologyHub /></div></PageWrapper>} />
-              <Route path="/stats" element={<PageWrapper keyProp="stats"><div className="flex-1 overflow-y-auto"><StatisticsHub /></div></PageWrapper>} />
-              <Route path="/logistics" element={<PageWrapper keyProp="logistics"><div className="flex-1 overflow-y-auto"><LogisticsHub /></div></PageWrapper>} />
-              <Route path="/hr" element={<PageWrapper keyProp="hr"><div className="flex-1 overflow-y-auto"><HRHub /></div></PageWrapper>} />
-              <Route path="/sacs" element={<PageWrapper keyProp="sacs"><div className="flex-1 overflow-y-auto"><SACSHub /></div></PageWrapper>} />
-              <Route path="/networks" element={<PageWrapper keyProp="networks"><div className="flex-1 overflow-y-auto"><NetworksHub /></div></PageWrapper>} />
-              <Route path="/immunization" element={<PageWrapper keyProp="immunization"><div className="flex-1 overflow-y-auto"><ImmunizationHub /></div></PageWrapper>} />
-              <Route path="/programs" element={<PageWrapper keyProp="programs"><div className="flex-1 overflow-y-auto"><ProgramsHub /></div></PageWrapper>} />
-              <Route path="/module/epi10" element={<PageWrapper keyProp="epi10"><div className="flex-1 flex flex-col h-full p-2 sm:p-4 overflow-hidden"><Epi10Form /></div></PageWrapper>} />
-              <Route path="/module/dsp04" element={<PageWrapper keyProp="dsp04"><div className="flex-1 flex flex-col h-full p-2 sm:p-4 overflow-hidden"><Dsp04Form /></div></PageWrapper>} />
-              <Route path="/settings" element={<PageWrapper keyProp="settings"><div className="flex-1 overflow-y-auto p-4 md:p-6"><SettingsModule /></div></PageWrapper>} />
+              <Route path="/" element={<PageWrapper keyProp="home"><div className="h-full overflow-y-auto w-full"><HomeRouter /></div></PageWrapper>} />
+              <Route path="/epidemiology" element={<PageWrapper keyProp="epidemiology"><div className="h-full overflow-y-auto w-full flex flex-col"><EpidemiologyHub /></div></PageWrapper>} />
+              <Route path="/stats/*" element={<PageWrapper keyProp="stats"><div className="h-full overflow-y-auto w-full flex flex-col"><StatisticsHub /></div></PageWrapper>} />
+              <Route path="/logistics" element={<PageWrapper keyProp="logistics"><div className="h-full overflow-y-auto w-full"><LogisticsHub /></div></PageWrapper>} />
+              <Route path="/hr" element={<PageWrapper keyProp="hr"><div className="h-full overflow-y-auto w-full"><HRHub /></div></PageWrapper>} />
+              <Route path="/sacs" element={<PageWrapper keyProp="sacs"><div className="h-full overflow-y-auto w-full"><SACSHub /></div></PageWrapper>} />
+              <Route path="/networks" element={<PageWrapper keyProp="networks"><div className="h-full overflow-y-auto w-full"><NetworksHub /></div></PageWrapper>} />
+              <Route path="/immunization" element={<PageWrapper keyProp="immunization"><div className="h-full overflow-y-auto w-full"><ImmunizationHub /></div></PageWrapper>} />
+              <Route path="/programs" element={<PageWrapper keyProp="programs"><div className="h-full overflow-y-auto w-full"><ProgramsHub /></div></PageWrapper>} />
+              <Route path="/module/epi10" element={<PageWrapper keyProp="epi10"><div className="h-full overflow-y-auto w-full p-2 sm:p-4"><Epi10Form /></div></PageWrapper>} />
+              <Route path="/module/dsp04" element={<PageWrapper keyProp="dsp04"><div className="h-full overflow-y-auto w-full p-2 sm:p-4"><Dsp04Form /></div></PageWrapper>} />
+              <Route path="/settings" element={<PageWrapper keyProp="settings"><div className="h-full overflow-y-auto w-full p-4 md:p-6"><SettingsModule /></div></PageWrapper>} />
             </Routes>
           </AnimatePresence>
         </main>

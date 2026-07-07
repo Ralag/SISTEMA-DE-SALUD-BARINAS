@@ -2,11 +2,7 @@ import React, { useState } from 'react';
 import { Search, Syringe, ShieldCheck, Activity, Package, Users, Kanban, Calendar, FileText, Megaphone, CheckCircle2, AlertTriangle, TrendingUp, ChevronRight, Clock, Plus, Stethoscope, ClipboardList, BarChart3, MapPin, Layers } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
-import { UserRole } from '../types';
-import StatisticsHome from './dashboards/StatisticsHome';
-import AuthorityHome from './dashboards/AuthorityHome';
-import EpidemiologyHome from './dashboards/EpidemiologyHome';
-import ImmunizationHome from './dashboards/ImmunizationHome';
+
 
 
 export default function WelcomeHub() {
@@ -35,31 +31,28 @@ export default function WelcomeHub() {
   });
 
   return (
-    <div className="p-4 md:p-6 max-w-7xl mx-auto w-full">
+    <div className="p-4 md:p-6 max-w-7xl mx-auto w-full space-y-6">
       <HeaderCorporativo user={user} isOperational={isOperational} />
       
-      {['ESTADISTICA', 'DIRECTOR_ASIC', 'ESTADISTICA_ASIC'].includes(user.department) ? (
-        <StatisticsHome />
-      ) : (
-        <div className="flex flex-col lg:flex-row gap-6">
-          <div className="flex-1 space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {quickAccess.map((item, i) => (
-                <QuickAccessCard key={i} {...item} />
-              ))}
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <TaskInbox tasks={[]} />
-              <RecentActivity activities={[]} />
-            </div>
-          </div>
-          
-          <div className="w-full lg:w-80 flex-shrink-0">
-            <RightSidebar />
+      {/* Quick Access Cards always visible */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {quickAccess.map((item, i) => (
+          <QuickAccessCard key={i} {...item} />
+        ))}
+      </div>
+
+      <div className="flex flex-col lg:flex-row gap-6 mt-8">
+        <div className="flex-1 space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <TaskInbox tasks={[]} />
+            <RecentActivity activities={[]} />
           </div>
         </div>
-      )}
+        
+        <div className="w-full lg:w-80 flex-shrink-0">
+          <RightSidebar />
+        </div>
+      </div>
     </div>
   );
 }
@@ -154,7 +147,7 @@ function TaskInbox({ tasks }: { tasks: any[] }) {
       </div>
       <div className="flex-1 overflow-y-auto p-2">
         {tasks.length === 0 && (
-          <div className="h-full flex flex-col items-center justify-center text-slate-400">
+          <div className="min-h-full flex flex-col items-center justify-center text-slate-400">
             <CheckCircle2 size={32} className="mb-2 opacity-50" />
             <p className="text-sm">No hay tareas pendientes</p>
           </div>
@@ -174,7 +167,7 @@ function RecentActivity({ activities }: { activities: any[] }) {
       </div>
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {activities.length === 0 && (
-          <div className="h-full flex flex-col items-center justify-center text-slate-400">
+          <div className="min-h-full flex flex-col items-center justify-center text-slate-400">
             <Activity size={32} className="mb-2 opacity-50" />
             <p className="text-sm">No hay actividad reciente</p>
           </div>
