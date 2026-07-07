@@ -80,12 +80,25 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [syncStatus, setSyncStatus] = useState<SyncStatus>('idle');
   const [lastSync, setLastSync] = useState<Date | null>(null);
 
-  const [uiScale, setUiScale] = useState<UIScale>('compact');
-  const [themeMode, setThemeMode] = useState<ThemeMode>('light');
-  const [themeColor, setThemeColor] = useState<ThemeColor>('blue');
+  const [uiScale, setUiScale] = useState<UIScale>(() => {
+    return (localStorage.getItem('uiScale') as UIScale) || 'compact';
+  });
+  
+  const [themeMode, setThemeMode] = useState<ThemeMode>(() => {
+    return (localStorage.getItem('themeMode') as ThemeMode) || 'light';
+  });
+  
+  const [themeColor, setThemeColor] = useState<ThemeColor>(() => {
+    return (localStorage.getItem('themeColor') as ThemeColor) || 'blue';
+  });
+  
   const [isAppsOpen, setIsAppsOpen] = useState(false);
 
   React.useEffect(() => {
+    localStorage.setItem('uiScale', uiScale);
+    localStorage.setItem('themeMode', themeMode);
+    localStorage.setItem('themeColor', themeColor);
+
     const root = document.documentElement;
     if (uiScale === 'compact') root.style.fontSize = '12px'; // Smaller for compactness
     else if (uiScale === 'large') root.style.fontSize = '16px';

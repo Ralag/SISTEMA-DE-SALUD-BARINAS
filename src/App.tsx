@@ -1,19 +1,25 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { BrowserRouter, Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
-import { Activity, LayoutDashboard, Layers, Cloud, CloudOff, RefreshCw, HelpCircle, Users, Menu, X, BarChart3, LayoutGrid, Settings, Info, Search, Home, ClipboardList, Shield, MessageSquare, Package, Kanban, FileText } from 'lucide-react';
+import { Activity, LayoutDashboard, Layers, Cloud, CloudOff, RefreshCw, HelpCircle, Users, Menu, X, BarChart3, LayoutGrid, Settings, Info, Search, Home, ClipboardList, Shield, MessageSquare, Package, Kanban, FileText, HeartPulse, ShieldCheck } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import Epi10Form from './components/Epi10Form';
 import Dsp04Form from './components/Dsp04Form';
 import WelcomeHub from './components/WelcomeHub';
+import EpidemiologyHub from './components/EpidemiologyHub';
+import LogisticsHub from './components/LogisticsHub';
+import HRHub from './components/HRHub';
+import SACSHub from './components/SACSHub';
+import AuthorityHub from './components/AuthorityHub';
+import ImmunizationHub from './components/ImmunizationHub';
+import NetworksHub from './components/NetworksHub';
+import ProgramsHub from './components/ProgramsHub';
 import StatisticsHub from './components/StatisticsHub';
-import DataEntryHub from './components/DataEntryHub';
 import { HelpModal } from './components/Modals';
 import SettingsModule from './components/SettingsModule';
 import { useAppContext } from './context/AppContext';
 import OrgUnitTree from './components/OrgUnitTree';
 import { SYSTEM_ROLES, AccessLevel } from './types';
 import LoginScreen from './components/LoginScreen';
-import { LogisticsModule, HRModule, ProjectsModule, DocsModule } from './components/Placeholders';
 
 function TopNav({ toggleSidebar, isSidebarOpen, showSidebarToggle }: { toggleSidebar: () => void, isSidebarOpen: boolean, showSidebarToggle: boolean }) {
   const { syncStatus, user, setUser, setIsSettingsOpen, isAppsOpen, setIsAppsOpen } = useAppContext();
@@ -37,18 +43,27 @@ function TopNav({ toggleSidebar, isSidebarOpen, showSidebarToggle }: { toggleSid
 
   if (!user) return null;
 
-  const allApps: { name: string, path: string, icon: React.ReactNode, roles: AccessLevel[] }[] = [
-    { name: 'Workspace (Inicio)', path: '/', icon: <LayoutDashboard size={22} className="text-blue-600" />, roles: ['L0_STRATEGIC', 'L1_CENTRAL', 'L1_TACTICAL', 'L2_LOCAL', 'L3_OPERATIONAL'] },
-    { name: 'SIS.Core (DHIS2)', path: '/stats', icon: <Activity size={22} className="text-emerald-600" />, roles: ['L0_STRATEGIC', 'L1_CENTRAL', 'L1_TACTICAL', 'L2_LOCAL', 'L3_OPERATIONAL'] },
-    { name: 'Gestión ERP (Farmacia)', path: '/logistics', icon: <Package size={22} className="text-indigo-600" />, roles: ['L0_STRATEGIC', 'L1_CENTRAL', 'L1_TACTICAL', 'L2_LOCAL', 'L3_OPERATIONAL'] },
-    { name: 'Recursos Humanos', path: '/hr', icon: <Users size={22} className="text-amber-600" />, roles: ['L0_STRATEGIC', 'L1_CENTRAL', 'L1_TACTICAL'] },
-    { name: 'Proyectos', path: '/projects', icon: <Kanban size={22} className="text-rose-600" />, roles: ['L0_STRATEGIC', 'L1_CENTRAL', 'L1_TACTICAL'] },
-    { name: 'Comunicaciones', path: '/docs', icon: <FileText size={22} className="text-cyan-600" />, roles: ['L0_STRATEGIC', 'L1_CENTRAL', 'L1_TACTICAL', 'L2_LOCAL', 'L3_OPERATIONAL'] },
-    { name: 'Módulos de Carga', path: '/modules', icon: <Layers size={22} className="text-blue-600" />, roles: ['L1_CENTRAL', 'L1_TACTICAL', 'L2_LOCAL', 'L3_OPERATIONAL'] },
+  
+
+  const allApps: { name: string, path: string, icon: React.ReactNode, roles: AccessLevel[], departments?: string[] }[] = [
+    { name: 'Workspace (Inicio)', path: '/', icon: <LayoutDashboard size={22} className="text-slate-600" />, roles: ['L0_STRATEGIC', 'L1_CENTRAL', 'L1_TACTICAL', 'L2_LOCAL', 'L3_OPERATIONAL'] },
+    { name: 'Epidemiología', path: '/epidemiology', icon: <Activity size={22} className="text-emerald-600" />, roles: ['L1_CENTRAL', 'L2_LOCAL'], departments: ['EPIDEMIOLOGIA'] },
+    { name: 'Estadística (CEIS)', path: '/stats', icon: <BarChart3 size={22} className="text-cyan-600" />, roles: ['L1_CENTRAL', 'L2_LOCAL'], departments: ['ESTADISTICA', 'DIRECTOR_ASIC', 'ESTADISTICA_ASIC'] },
+    { name: 'Inmunización (PAI)', path: '/immunization', icon: <HeartPulse size={22} className="text-indigo-600" />, roles: ['L1_TACTICAL', 'L2_LOCAL'], departments: ['INMUNIZACION'] },
+    { name: 'Programas de Salud', path: '/programs', icon: <HeartPulse size={22} className="text-purple-600" />, roles: ['L1_TACTICAL', 'L2_LOCAL'], departments: ['TUBERCULOSIS', 'ITS_VIH', 'CAREMT', 'SALUD_FAMILIAR', 'SALUD_COMUNITARIA', 'MALARIOLOGIA', 'PROGRAMAS_SALUD'] },
+    { name: 'SEFAR (Logística)', path: '/logistics', icon: <Package size={22} className="text-blue-600" />, roles: ['L1_CENTRAL', 'L2_LOCAL'], departments: ['SEFAR'] },
+    { name: 'Recursos Humanos', path: '/hr', icon: <Users size={22} className="text-amber-600" />, roles: ['L1_CENTRAL'], departments: ['RRHH'] },
+    { name: 'Contraloría (SACS)', path: '/sacs', icon: <ShieldCheck size={22} className="text-rose-600" />, roles: ['L1_CENTRAL'], departments: ['SACS'] },
+    { name: 'Redes de Atención', path: '/networks', icon: <Layers size={22} className="text-blue-600" />, roles: ['L1_CENTRAL'], departments: ['RED_ATENCION'] },
     { name: 'Configuración', path: '/settings', icon: <Settings size={22} className="text-slate-600 dark:text-slate-300" />, roles: ['L1_CENTRAL', 'L0_STRATEGIC', 'L1_TACTICAL', 'L2_LOCAL', 'L3_OPERATIONAL'] }
   ];
 
-  const allowedApps = allApps.filter(app => user.level === 'ADMIN' || app.roles.includes(user.level));
+  const allowedApps = allApps.filter(app => {
+    if (user.level === 'ADMIN' || user.level === 'L0_STRATEGIC' || user.department === 'DES') return true;
+    if (!app.roles.includes(user.level)) return false;
+    if (app.departments && !app.departments.includes(user.department)) return false;
+    return true;
+  });
 
   return (
     <header className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 h-14 flex items-center justify-between px-4 shadow-sm border-b border-slate-200 dark:border-slate-800 flex-shrink-0 z-40 relative">
@@ -84,76 +99,67 @@ function TopNav({ toggleSidebar, isSidebarOpen, showSidebarToggle }: { toggleSid
           </span>
         </div>
         
-        {/* User Profile & Role Switcher */}
+                {/* Integrated User & Apps Menu */}
         <div className="relative" ref={userMenuRef}>
           <div 
-            className="flex items-center gap-2 hover:bg-slate-100 dark:hover:bg-slate-800 px-2 py-1 rounded cursor-pointer transition-colors"
+            className={`flex items-center gap-3 px-3 py-1.5 rounded-lg cursor-pointer transition-colors border ${isUserMenuOpen ? 'bg-blue-50 border-blue-200 dark:bg-blue-900/30 dark:border-blue-800' : 'bg-transparent border-transparent hover:bg-slate-100 dark:hover:bg-slate-800'}`}
             onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
           >
             <div className="text-right hidden md:block">
               <p className="text-xs font-bold uppercase leading-tight text-slate-800 dark:text-slate-100">{user.name}</p>
               <p className="text-[9px] text-slate-500 uppercase leading-tight">{user.title}</p>
             </div>
-            <div className="w-7 h-7 rounded-full bg-blue-700 border border-blue-600 flex items-center justify-center text-xs font-bold text-white shadow-sm">
-              <Users size={14} />
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-full bg-blue-700 border border-blue-600 flex items-center justify-center text-xs font-bold text-white shadow-sm">
+                <Users size={14} />
+              </div>
+              <LayoutGrid size={16} className="text-slate-400" />
             </div>
           </div>
 
           {isUserMenuOpen && (
-            <div className="absolute right-0 top-full mt-2 w-64 bg-white dark:bg-slate-900 rounded-lg shadow-xl border border-slate-200 dark:border-slate-800 overflow-hidden z-50 text-slate-800 dark:text-slate-100 animate-in fade-in slide-in-from-top-2 duration-200">
-              <div className="p-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Cambiar Rol </span>
-              </div>
-              <div className="flex flex-col max-h-96 overflow-y-auto">
-                {Object.values(SYSTEM_ROLES).map((role) => (
-                  <button
-                    key={role.id}
-                    onClick={() => {
-                      setUser(role);
-                      setIsUserMenuOpen(false);
-                    }}
-                    className={`text-left px-4 py-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors flex flex-col ${user.id === role.id ? 'bg-blue-50/50 dark:bg-blue-900/30 border-l-2 border-blue-600' : 'border-l-2 border-transparent'}`}
-                  >
-                    <span className={`text-xs font-bold ${user.id === role.id ? 'text-blue-700 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300'}`}>{role.name}</span>
-                    <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">{role.title}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Apps Menu */}
-        <div className="relative" ref={appsMenuRef}>
-          <button 
-            onClick={() => setIsAppsOpen(!isAppsOpen)}
-            className={`w-9 h-9 flex items-center justify-center rounded transition-colors ${isAppsOpen ? 'bg-blue-950 text-white' : 'text-blue-100 hover:bg-blue-800'}`}
-          >
-            <LayoutGrid size={18} />
-          </button>
-
-          {isAppsOpen && (
-            <div className="absolute right-0 top-full mt-2 w-[320px] bg-white dark:bg-slate-900 rounded-lg shadow-xl border border-slate-200 dark:border-slate-800 overflow-hidden z-50 text-slate-800 dark:text-slate-100 animate-in fade-in slide-in-from-top-2 duration-200">
-              <div className="p-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
-                <div className="relative">
-                  <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
-                  <input type="text" placeholder="Buscar aplicaciones..." className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded pl-8 pr-3 py-1.5 text-xs outline-none focus:border-blue-500 transition-colors" />
+            <div className="absolute right-0 top-full mt-2 w-[340px] bg-white dark:bg-slate-900 rounded-lg shadow-xl border border-slate-200 dark:border-slate-800 overflow-hidden z-50 text-slate-800 dark:text-slate-100 animate-in fade-in slide-in-from-top-2 duration-200">
+              <div className="p-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 flex flex-col gap-2">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-blue-700 border border-blue-600 flex items-center justify-center text-sm font-bold text-white shadow-sm">
+                    {user.name.charAt(0)}
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold uppercase text-slate-800 dark:text-slate-100">{user.name}</p>
+                    <p className="text-xs text-slate-500 uppercase">{user.department}</p>
+                  </div>
                 </div>
               </div>
-              <div className="grid grid-cols-3 gap-1 p-2 max-h-96 overflow-y-auto">
-                {allowedApps.map((app, idx) => (
-                  <Link 
-                    key={idx} 
-                    to={app.path}
-                    onClick={() => setIsAppsOpen(false)}
-                    className="flex flex-col items-center gap-2 p-3 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors text-center cursor-pointer group"
-                  >
-                    <div className="w-12 h-12 bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
-                      {app.icon}
-                    </div>
-                    <span className="text-[10px] font-bold text-slate-600 dark:text-slate-300 leading-tight group-hover:text-blue-700 dark:group-hover:text-blue-400">{app.name}</span>
-                  </Link>
-                ))}
+              
+              <div className="p-3 border-b border-slate-100 dark:border-slate-800">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 px-1">Módulos Disponibles</p>
+                <div className="grid grid-cols-3 gap-2 max-h-64 overflow-y-auto">
+                  {allowedApps.map((app, idx) => (
+                    <Link 
+                      key={idx} 
+                      to={app.path}
+                      onClick={() => setIsUserMenuOpen(false)}
+                      className="flex flex-col items-center gap-2 p-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors text-center cursor-pointer group"
+                    >
+                      <div className="w-10 h-10 bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
+                        {app.icon}
+                      </div>
+                      <span className="text-[9px] font-bold text-slate-600 dark:text-slate-300 leading-tight group-hover:text-blue-700 dark:group-hover:text-blue-400">{app.name}</span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="p-2 bg-slate-50 dark:bg-slate-800/50">
+                <button
+                  onClick={() => {
+                    setUser(null);
+                    setIsUserMenuOpen(false);
+                  }}
+                  className="w-full text-left px-3 py-2 text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-md transition-colors flex items-center gap-2"
+                >
+                  Cerrar Sesión
+                </button>
               </div>
             </div>
           )}
@@ -175,6 +181,10 @@ const PageWrapper = ({ children, keyProp }: { children: React.ReactNode, keyProp
     {children}
   </motion.div>
 );
+
+function HomeRouter() {
+  return <WelcomeHub />;
+}
 
 function MainLayout() {
   const { user, setIsAppsOpen } = useAppContext();
@@ -250,16 +260,18 @@ function MainLayout() {
         <main className="flex-1 flex flex-col overflow-hidden bg-transparent relative">
           <AnimatePresence mode="wait">
             <Routes location={location}>
-              <Route path="/" element={<PageWrapper keyProp="home"><div className="flex-1 overflow-y-auto"><WelcomeHub /></div></PageWrapper>} />
-              <Route path="/modules" element={<PageWrapper keyProp="modules"><div className="flex-1 overflow-y-auto"><DataEntryHub /></div></PageWrapper>} />
+              <Route path="/" element={<PageWrapper keyProp="home"><div className="flex-1 flex flex-col overflow-hidden h-full"><HomeRouter /></div></PageWrapper>} />
+              <Route path="/epidemiology" element={<PageWrapper keyProp="epidemiology"><div className="flex-1 overflow-y-auto"><EpidemiologyHub /></div></PageWrapper>} />
               <Route path="/stats" element={<PageWrapper keyProp="stats"><div className="flex-1 overflow-y-auto"><StatisticsHub /></div></PageWrapper>} />
+              <Route path="/logistics" element={<PageWrapper keyProp="logistics"><div className="flex-1 overflow-y-auto"><LogisticsHub /></div></PageWrapper>} />
+              <Route path="/hr" element={<PageWrapper keyProp="hr"><div className="flex-1 overflow-y-auto"><HRHub /></div></PageWrapper>} />
+              <Route path="/sacs" element={<PageWrapper keyProp="sacs"><div className="flex-1 overflow-y-auto"><SACSHub /></div></PageWrapper>} />
+              <Route path="/networks" element={<PageWrapper keyProp="networks"><div className="flex-1 overflow-y-auto"><NetworksHub /></div></PageWrapper>} />
+              <Route path="/immunization" element={<PageWrapper keyProp="immunization"><div className="flex-1 overflow-y-auto"><ImmunizationHub /></div></PageWrapper>} />
+              <Route path="/programs" element={<PageWrapper keyProp="programs"><div className="flex-1 overflow-y-auto"><ProgramsHub /></div></PageWrapper>} />
               <Route path="/module/epi10" element={<PageWrapper keyProp="epi10"><div className="flex-1 flex flex-col h-full p-2 sm:p-4 overflow-hidden"><Epi10Form /></div></PageWrapper>} />
               <Route path="/module/dsp04" element={<PageWrapper keyProp="dsp04"><div className="flex-1 flex flex-col h-full p-2 sm:p-4 overflow-hidden"><Dsp04Form /></div></PageWrapper>} />
               <Route path="/settings" element={<PageWrapper keyProp="settings"><div className="flex-1 overflow-y-auto p-4 md:p-6"><SettingsModule /></div></PageWrapper>} />
-              <Route path="/logistics" element={<PageWrapper keyProp="logistics"><div className="flex-1 overflow-y-auto"><LogisticsModule /></div></PageWrapper>} />
-              <Route path="/hr" element={<PageWrapper keyProp="hr"><div className="flex-1 overflow-y-auto"><HRModule /></div></PageWrapper>} />
-              <Route path="/projects" element={<PageWrapper keyProp="projects"><div className="flex-1 overflow-y-auto"><ProjectsModule /></div></PageWrapper>} />
-              <Route path="/docs" element={<PageWrapper keyProp="docs"><div className="flex-1 overflow-y-auto"><DocsModule /></div></PageWrapper>} />
             </Routes>
           </AnimatePresence>
         </main>

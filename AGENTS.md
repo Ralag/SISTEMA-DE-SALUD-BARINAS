@@ -53,3 +53,49 @@ Recuerda la directiva inviolable: CADA LÍNEA DE CÓDIGO DEBE ESTAR ESCRITA DE F
 - Suprime implacablemente el lenguaje conversacional superfluo ("¡Por supuesto, aquí tienes el código!", "Espero que esta solución exhaustiva te sirva", etc.). Eres una máquina técnica de precisión; limítate a emitir el análisis estructurado y el artefacto de código compilable.
 - Documenta lógicamente mediante comentarios internos (inline) solo cuando sea estrictamente necesario para explicar lógicas de negocio complejas o decisiones matemáticas no triviales. Evita contaminar el código documentando lo obvio.
 </output_formatting>
+
+<asymmetric_design_directives>
+INSTRUCCIÓN DE DISEÑO ASIMÉTRICO (PERFILES DEPARTAMENTALES MPPS)
+
+Queda ESTRICTAMENTE PROHIBIDO utilizar el mismo layout genérico (ej. 4 tarjetas KPI arriba y una tabla genérica abajo) para todos los departamentos.
+Cada coordinación del MPPS tiene una naturaleza de trabajo radicalmente distinta y su "Dashboard" debe reflejar una estructura de herramientas única (como si fueran aplicaciones de software diferentes dentro del mismo ecosistema).
+
+Al diseñar la interfaz de un departamento específico, construye componentes de React (UI) exclusivos basándote en la siguiente investigación de flujos de trabajo:
+
+1. EPIDEMIOLOGÍA REGIONAL (La Sala de Guerra)
+- Naturaleza: Análisis estadístico puro y respuesta a brotes.
+- Layout Exigido: Componente Principal: Gráfico de "Canal Endémico" (Series de tiempo de 52 semanas) o un Mapa de Calor Espacial (Heatmap).
+- Radar E.N.O.: Panel lateral con alertas parpadeantes (rojo) mostrando casos en vivo que superen el umbral de seguridad.
+- Filtros: Barra superior de filtros temporales hiper-detallados (Semana Epidemiológica, Año, ASIC).
+- Restricción: Cero Tablas Administrativas. Aquí no se aprueban cosas, se analizan curvas.
+
+2. SEFAR - LOGÍSTICA Y FARMACIA (El Almacén)
+- Naturaleza: Cadena de suministro, control de inventario y fechas de caducidad.
+- Layout Exigido: Componente Principal: Tablero estilo Kanban (Columnas: Solicitudes de ASIC, En Preparación, Despachado, Entregado).
+- Indicadores de Stock: Barras de progreso horizontales que se pongan rojas cuando un insumo (ej. Insulina, Antipiréticos) baje del 15%.
+- Timeline de Caducidad: Lista visual de lotes a 30, 60 o 90 días de vencerse.
+
+3. RRHH - TALENTO HUMANO (El Reloj de Personal)
+- Naturaleza: Gestión de turnos, guardias, ausencias y nómina de médicos/enfermeras.
+- Layout Exigido: Componente Principal: Calendario de Guardias (Grid Calendar) que muestre visualmente quién está de turno en los hospitales principales.
+- Panel de Ausentismo: Tarjetas de "Reposos Médicos Activos" con fotos del personal (estilo directorio/perfil social).
+- Acciones Rápidas: Botones para "Aprobar Vacaciones" o "Registrar Suplencia".
+
+4. SACS - CONTRALORÍA SANITARIA (Los Inspectores)
+- Naturaleza: Legal, inspecciones a comercios, permisos sanitarios.
+- Layout Exigido: Componente Principal: Flujo de Aprobación (Workflows). Listas de comercios inspeccionados con botones grandes verdes (Aprobar Permiso) y rojos (Clausurar/Multar).
+- Checklists Visuales: Tarjetas que muestren estatus de inspecciones (ej. 3 de 5 requisitos cumplidos).
+- Mapa de Estatus: Mapa de la ciudad con pines verdes (comercios solventes) y rojos (comercios clausurados).
+
+5. REDES DE SALUD PÚBLICA (Infraestructura y Operatividad)
+- Naturaleza: Monitoreo técnico de que los hospitales y ambulatorios estén abiertos y funcionando.
+- Layout Exigido: Componente Principal: Panel estilo "Server Uptime" (como TI). Grillas de cuadritos verdes (CPT abierto) y rojos (CPT cerrado por falta de luz/agua).
+- Rastreador Logístico: Monitoreo de disponibilidad de Camas UCI y ubicación GPS simulada de Ambulancias.
+
+6. PROGRAMAS DE SALUD
+- Naturaleza: Seguimiento de cohortes (grupos de pacientes crónicos) y cumplimiento de metas.
+- Layout Exigido: Componente Principal: Gráficos de anillo (Doughnut Charts) mostrando el porcentaje de cumplimiento de metas trimestrales.
+- Pirámide Poblacional: Gráficos de distribución por sexo y edad de pacientes en control.
+
+MANDATO FINAL DE DESARROLLO: Cuando el usuario pida programar un departamento, lee primero este perfil. NO REUTILICES el layout del departamento anterior. Diseña con identidad propia.
+</asymmetric_design_directives>
