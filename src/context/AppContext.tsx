@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { UserRole, SYSTEM_ROLES } from '../types';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import { UserRole, SYSTEM_ROLES, AccessLevel } from '../types';
+import { supabase } from '../lib/supabase';
 
 type SyncStatus = 'idle' | 'syncing' | 'success' | 'error';
 export type UIScale = 'compact' | 'normal' | 'large';
@@ -67,7 +68,55 @@ const AppContext = createContext<AppState | undefined>(undefined);
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<UserRole | null>(null); // Default to null for login screen
+  const [authInitialized, setAuthInitialized] = useState(false);
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
+  
+  useEffect(() => {
+    const isSupabaseConfigured = import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_URL !== 'your_supabase_project_url';
+    if (!isSupabaseConfigured) {
+      setAuthInitialized(true);
+      return;
+    }
+
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        const metadata = session.user.user_metadata;
+        setUser({
+          id: session.user.id,
+          name: metadata?.nombre || session.user.email?.split('@')[0] || 'Administrador Maestro',
+          level: (metadata?.nivel as AccessLevel) || (session.user.email === 'admin@mpps.gob.ve' ? 'ADMIN' : 'L2_LOCAL'),
+          department: metadata?.departamento || (session.user.email === 'admin@mpps.gob.ve' ? 'SISTEMAS' : 'ESTADISTICA_ASIC'),
+          title: metadata?.rol || (session.user.email === 'admin@mpps.gob.ve' ? 'SysAdmin' : 'Personal Médico'),
+          asicAccess: metadata?.asicId
+        });
+      }
+      setAuthInitialized(true);
+    };
+
+    checkSession();
+
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' && session?.user) {
+        const metadata = session.user.user_metadata;
+        setUser({
+          id: session.user.id,
+          name: metadata?.nombre || session.user.email?.split('@')[0] || 'Administrador Maestro',
+          level: (metadata?.nivel as AccessLevel) || (session.user.email === 'admin@mpps.gob.ve' ? 'ADMIN' : 'L2_LOCAL'),
+          department: metadata?.departamento || (session.user.email === 'admin@mpps.gob.ve' ? 'SISTEMAS' : 'ESTADISTICA_ASIC'),
+          title: metadata?.rol || (session.user.email === 'admin@mpps.gob.ve' ? 'SysAdmin' : 'Personal Médico'),
+          asicAccess: metadata?.asicId
+        });
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null);
+      }
+    });
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
+
   const addToast = (message: string, type: ToastType = 'info') => {
     const id = Math.random().toString(36).substring(2, 11);
     setToasts(prev => [...prev, { id, type, message }]);

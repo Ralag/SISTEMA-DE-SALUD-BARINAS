@@ -1,24 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Unlock, History, AlertTriangle, FileInput, ShieldAlert, CheckCircle2, ChevronRight, FileEdit, User } from 'lucide-react';
 import { useAppContext } from '../../../context/AppContext';
-
-// Mock Data
-const AUDIT_LOGS = [
-  { id: 'aud_001', action: 'Sobrescritura de Emergencia', entity: 'Registro DSP-04', details: 'Valor Casos Malaria modificado de 10 a 2', user: 'Ing. Roberto Paz', asic: 'Admin Sede', timestamp: 'Hace 5 mins', ip: '192.168.1.5' },
-  { id: 'aud_002', action: 'Desbloqueo (Soft-Unlock)', entity: 'Semana Epidemiológica 24', details: 'Ventana de gracia de 2H abierta para ASIC Corazón de Jesús', user: 'Dra. María González', asic: 'Admin Sede', timestamp: 'Hace 2 horas', ip: '10.0.0.12' },
-  { id: 'aud_003', action: 'Fusión de Registros', entity: 'Paciente EPI-10', details: 'Fusión de C.I. 25.123.456 y 25.123.456-A (Duplicado)', user: 'Ing. Roberto Paz', asic: 'Admin Sede', timestamp: 'Ayer', ip: '192.168.1.5' },
-];
+import { db } from '../../../lib/db';
 
 export default function GovernanceTab() {
-  const { addToast } = useAppContext();
+  const { addToast, user } = useAppContext();
   const [searchTerm, setSearchTerm] = useState('');
+  const [logs, setLogs] = useState<any[]>([]);
 
-  const handleSoftUnlock = () => {
-    addToast('Ventana de gracia de 2H aperturada para la carga de datos del ASIC seleccionado.', 'success');
+  useEffect(() => {
+    fetchLogs();
+  }, []);
+
+  const fetchLogs = async () => {
+    const data = await db.getAuditLogs();
+    setLogs(data);
   };
 
-  const handleHardOverride = () => {
-    addToast('¡ADVERTENCIA! El registro inmutable será creado para esta modificación directa.', 'error');
+  const handleSoftUnlock = async () => {
+    await db.createAuditLog({
+      action: 'Desbloqueo (Soft-Unlock)',
+      entity: 'Semana Epidemiológica Actual',
+      details: 'Ventana de gracia de 2H abierta para todas las entidades.',
+      user_name: user?.name || 'Administrador',
+      asic: user?.asicAccess || 'N/A',
+      ip_address: '127.0.0.1'
+    });
+    addToast('Ventana de gracia de 2H aperturada para la carga de datos del ASIC seleccionado.', 'success');
+    fetchLogs();
+  };
+
+  const handleHardOverride = async () => {
+    await db.createAuditLog({
+      action: 'Sobrescritura de Emergencia',
+      entity: 'Base de Datos Principal',
+      details: 'Acceso directo de modificación sin validación estándar concedido.',
+      user_name: user?.name || 'Administrador',
+      asic: user?.asicAccess || 'N/A',
+      ip_address: '127.0.0.1'
+    });
+    addToast('¡ADVERTENCIA! El registro inmutable ha sido creado para esta modificación directa.', 'error');
+    fetchLogs();
   };
 
   return (
@@ -113,7 +135,14 @@ export default function GovernanceTab() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200 dark:divide-slate-700 text-xs">
-              {AUDIT_LOGS.map((log) => (
+              {logs.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="px-6 py-8 text-center text-slate-500">
+                    No hay registros de auditoría
+                  </td>
+                </tr>
+              )}
+              {logs.map((log) => (
                 <tr key={log.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                   <td className="px-6 py-3">
                     <div className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
@@ -128,12 +157,12 @@ export default function GovernanceTab() {
                   <td className="px-6 py-3">
                     <div className="flex items-center gap-2 font-medium text-slate-700 dark:text-slate-300">
                       <User size={14} className="text-indigo-400" />
-                      {log.user}
+                      {log.user_name || log.user}
                     </div>
-                    <div className="text-[10px] text-slate-400 font-mono mt-0.5">IP: {log.ip}</div>
+                    <div className="text-[10px] text-slate-400 font-mono mt-0.5">IP: {log.ip_address || log.ip || 'Local'}</div>
                   </td>
                   <td className="px-6 py-3 whitespace-nowrap">
-                    {log.timestamp}
+                    {log.timestamp || new Date(log.created_at).toLocaleString()}
                   </td>
                   <td className="px-6 py-3 text-center">
                     <button className="inline-flex items-center justify-center p-1.5 text-indigo-600 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-900/30 rounded transition-colors" title="Ver Snapshot JSON">

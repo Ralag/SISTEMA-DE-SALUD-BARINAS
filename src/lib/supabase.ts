@@ -10,9 +10,14 @@ if (!supabaseUrl || !supabaseAnonKey) {
   );
 }
 
+let cleanUrl = supabaseUrl || 'https://placeholder.supabase.co';
+if (cleanUrl.endsWith('/rest/v1/') || cleanUrl.endsWith('/rest/v1')) {
+  cleanUrl = cleanUrl.replace(/\/rest\/v1\/?$/, '');
+}
+
 // Inicialización perezosa y segura del cliente Supabase
 export const supabase = createClient(
-  supabaseUrl || 'https://placeholder.supabase.co',
+  cleanUrl,
   supabaseAnonKey || 'placeholder-key',
   {
     auth: {

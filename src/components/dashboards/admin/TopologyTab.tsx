@@ -1,12 +1,26 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Network, GitBranch, MapPin, SlidersHorizontal, BookOpen, AlertCircle, Search, Edit2 } from 'lucide-react';
 import { useAppContext } from '../../../context/AppContext';
+import { useSaaSContext } from '../../../context/SaaSContext';
 
 export default function TopologyTab() {
   const { addToast } = useAppContext();
+  const { config, updateConfig } = useSaaSContext();
+  const [epiAlert, setEpiAlert] = useState(config.parameters.epiAlertThreshold || 80);
+  const [cptLimit, setCptLimit] = useState(50);
 
   const handleUpdateTree = () => {
     addToast('Editor del Árbol Organizativo abierto. Cambios no se aplicarán hasta guardar.', 'success');
+  };
+
+  const saveThresholds = () => {
+    updateConfig({
+      parameters: {
+        ...config.parameters,
+        epiAlertThreshold: epiAlert
+      }
+    });
+    addToast('Límites actualizados globalmente', 'success');
   };
 
   return (
@@ -107,16 +121,16 @@ export default function TopologyTab() {
               <div>
                 <div className="flex justify-between items-center mb-1">
                   <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Límite Rechazo: Consultas/Día (CPT)</label>
-                  <span className="text-xs font-mono bg-slate-100 dark:bg-slate-800 px-1.5 rounded text-slate-600 dark:text-slate-400">50</span>
+                  <span className="text-xs font-mono bg-slate-100 dark:bg-slate-800 px-1.5 rounded text-slate-600 dark:text-slate-400">{cptLimit}</span>
                 </div>
-                <input type="range" min="10" max="150" defaultValue="50" className="w-full accent-indigo-600" />
+                <input type="range" min="10" max="150" value={cptLimit} onChange={e => setCptLimit(parseInt(e.target.value))} onMouseUp={saveThresholds} onTouchEnd={saveThresholds} className="w-full accent-indigo-600" />
               </div>
               <div>
                 <div className="flex justify-between items-center mb-1">
-                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Umbral Alerta Brote Endémico (Desv. Std)</label>
-                  <span className="text-xs font-mono bg-slate-100 dark:bg-slate-800 px-1.5 rounded text-slate-600 dark:text-slate-400">2.5σ</span>
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Umbral Alerta Brote Endémico (%)</label>
+                  <span className="text-xs font-mono bg-slate-100 dark:bg-slate-800 px-1.5 rounded text-slate-600 dark:text-slate-400">{epiAlert}%</span>
                 </div>
-                <input type="range" min="1.0" max="4.0" step="0.1" defaultValue="2.5" className="w-full accent-emerald-600" />
+                <input type="range" min="50" max="100" step="1" value={epiAlert} onChange={e => setEpiAlert(parseInt(e.target.value))} onMouseUp={saveThresholds} onTouchEnd={saveThresholds} className="w-full accent-emerald-600" />
               </div>
               <p className="text-[10px] text-slate-500 dark:text-slate-500 leading-tight">
                 Estas reglas alteran la validación matemática en los clientes web en tiempo real. Úselas con precaución extrema durante epidemias declaradas.

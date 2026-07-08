@@ -18,6 +18,7 @@ import { HelpModal } from './components/Modals';
 import ToastContainer from './components/ToastContainer';
 import SettingsModule from './components/SettingsModule';
 import { useAppContext } from './context/AppContext';
+import { supabase } from './lib/supabase';
 import AdminConfigDashboard from './components/dashboards/AdminConfigDashboard';
 import { useSaaSContext } from './context/SaaSContext';
 import { AccessLevel } from './types';
@@ -162,7 +163,11 @@ function TopNav({ toggleSidebar, isSidebarOpen, showSidebarToggle }: { toggleSid
               
               <div className="p-2 bg-slate-50 dark:bg-slate-800/50">
                 <button
-                  onClick={() => {
+                  onClick={async () => {
+                    const isSupabaseConfigured = import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_URL !== 'your_supabase_project_url';
+                    if (isSupabaseConfigured) {
+                      await supabase.auth.signOut();
+                    }
                     setUser(null);
                     setIsUserMenuOpen(false);
                   }}
@@ -293,7 +298,7 @@ function MainLayout() {
               <Route path="/programs" element={<PageWrapper keyProp="programs"><div className="h-full overflow-y-auto w-full"><ProgramsHub /></div></PageWrapper>} />
               <Route path="/module/epi10" element={<PageWrapper keyProp="epi10"><div className="h-full overflow-y-auto w-full p-2 sm:p-4"><Epi10Form /></div></PageWrapper>} />
               <Route path="/module/dsp04" element={<PageWrapper keyProp="dsp04"><div className="h-full overflow-y-auto w-full p-2 sm:p-4"><Dsp04Form /></div></PageWrapper>} />
-              <Route path="/admin-saas" element={<PageWrapper keyProp="admin-saas"><div className="h-full overflow-y-auto w-full"><AdminConfigDashboard /></div></PageWrapper>} />
+              <Route path="/admin-saas" element={<PageWrapper keyProp="admin-saas"><div className="h-full overflow-y-auto w-full">{user.level === 'ADMIN' || user.level === 'MODERATOR' ? <AdminConfigDashboard /> : <Navigate to="/" replace />}</div></PageWrapper>} />
               <Route path="/settings" element={<PageWrapper keyProp="settings"><div className="h-full overflow-y-auto w-full p-4 md:p-6"><SettingsModule /></div></PageWrapper>} />
             </Routes>
           </AnimatePresence>

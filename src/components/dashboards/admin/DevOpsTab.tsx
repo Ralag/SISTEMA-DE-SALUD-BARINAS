@@ -1,12 +1,26 @@
 import React from 'react';
 import { Activity, Server, Database, HardDrive, RefreshCw, Terminal, Download, Zap, ShieldAlert, Cpu } from 'lucide-react';
 import { useAppContext } from '../../../context/AppContext';
+import { useSaaSContext } from '../../../context/SaaSContext';
 
 export default function DevOpsTab() {
   const { addToast } = useAppContext();
+  const { config, updateConfig } = useSaaSContext();
+  const isMaintenanceMode = config.parameters.maintenanceMode;
 
   const handleMaintenance = () => {
-    addToast('El sistema entrará en Mantenimiento Global en 5 minutos.', 'success');
+    updateConfig({
+      parameters: {
+        ...config.parameters,
+        maintenanceMode: !isMaintenanceMode
+      }
+    });
+    addToast(
+      !isMaintenanceMode 
+        ? 'El sistema entrará en Mantenimiento Global. Sesiones no administrativas serán bloqueadas.' 
+        : 'Modo Mantenimiento desactivado. El sistema opera normalmente.', 
+      !isMaintenanceMode ? 'error' : 'success'
+    );
   };
 
   const handleClearCache = () => {
@@ -102,9 +116,9 @@ export default function DevOpsTab() {
               </div>
               <button 
                 onClick={handleMaintenance}
-                className="shrink-0 bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-lg text-xs font-bold transition-colors"
+                className={`shrink-0 text-white px-4 py-2 rounded-lg text-xs font-bold transition-colors ${isMaintenanceMode ? 'bg-slate-600 hover:bg-slate-700' : 'bg-rose-600 hover:bg-rose-700'}`}
               >
-                Activar Bloqueo
+                {isMaintenanceMode ? 'Desactivar Mantenimiento' : 'Activar Bloqueo'}
               </button>
             </div>
 

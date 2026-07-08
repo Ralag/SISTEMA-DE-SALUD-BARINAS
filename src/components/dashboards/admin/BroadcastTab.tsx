@@ -1,25 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Megaphone, FileText, Ticket, MessageSquareWarning, Send, PlusCircle, CheckCircle2 } from 'lucide-react';
 import { useAppContext } from '../../../context/AppContext';
-
-const TICKETS = [
-  { id: 'TKT-042', subject: 'Falla al cargar dosis BCG', asic: 'Corazón de Jesús', user: 'Dr. López', status: 'open', priority: 'high', time: 'Hace 30 min' },
-  { id: 'TKT-041', subject: 'Error ortográfico en nombre de CPT', asic: 'Guanapa', user: 'Enf. Martínez', status: 'open', priority: 'low', time: 'Hace 2h' },
-  { id: 'TKT-040', subject: 'Solicitud de reinicio de clave', asic: 'Rómulo Gallegos', user: 'Dr. Silva', status: 'closed', priority: 'medium', time: 'Ayer' },
-];
+import { db } from '../../../lib/db';
 
 export default function BroadcastTab() {
   const { addToast } = useAppContext();
   const [bannerType, setBannerType] = useState('URGENT');
   const [bannerText, setBannerText] = useState('');
+  
+  const [banners, setBanners] = useState<any[]>([]);
+  const [tickets, setTickets] = useState<any[]>([]);
 
-  const handleBroadcast = () => {
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    const [fetchedBanners, fetchedTickets] = await Promise.all([
+      db.getBanners(),
+      db.getTickets()
+    ]);
+    setBanners(fetchedBanners);
+    setTickets(fetchedTickets);
+  };
+
+  const handleBroadcast = async () => {
     if (!bannerText) {
       addToast('El mensaje no puede estar vacío.', 'error');
       return;
     }
+    
+    await db.createBanner({
+      type: bannerType,
+      message: bannerText
+    });
+    
     addToast('Notificación global inyectada en todos los clientes conectados.', 'success');
     setBannerText('');
+    fetchData();
   };
 
   return (
@@ -107,7 +125,10 @@ export default function BroadcastTab() {
           
           <div className="flex-1 overflow-y-auto max-h-[400px]">
             <ul className="divide-y divide-slate-200 dark:divide-slate-700">
-              {TICKETS.map(ticket => (
+              {tickets.length === 0 && (
+                <li className="p-4 text-center text-slate-500 text-sm">No hay tickets activos</li>
+              )}
+              {tickets.map(ticket => (
                 <li key={ticket.id} className="p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer">
                   <div className="flex items-start justify-between mb-1">
                     <div className="flex items-center gap-2">
@@ -118,14 +139,14 @@ export default function BroadcastTab() {
                         <CheckCircle2 size={12} className="text-emerald-500" />
                       )}
                     </div>
-                    <span className="text-[10px] text-slate-400">{ticket.time}</span>
+                    <span className="text-[10px] text-slate-400">{ticket.time || new Date(ticket.created_at).toLocaleDateString()}</span>
                   </div>
                   <h4 className={`text-sm font-bold ${ticket.status === 'closed' ? 'text-slate-500 line-through decoration-slate-300' : 'text-slate-800 dark:text-slate-200'}`}>
                     {ticket.subject}
                   </h4>
                   <div className="flex items-center gap-2 mt-2 text-xs text-slate-500">
                     <MessageSquareWarning size={12} />
-                    <span>{ticket.user}</span>
+                    <span>{ticket.user_name || ticket.user}</span>
                     <span>•</span>
                     <span>{ticket.asic}</span>
                   </div>

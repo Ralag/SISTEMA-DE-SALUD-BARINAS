@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import { db } from '../lib/db';
 
 export interface SaaSModuleConfig {
   id: string;
@@ -67,33 +68,36 @@ interface SaaSState {
 const SaaSContext = createContext<SaaSState | undefined>(undefined);
 
 export const SaaSProvider = ({ children }: { children: ReactNode }) => {
-  const [config, setConfig] = useState<SaaSConfig>(() => {
-    const saved = localStorage.getItem('saasConfig');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        return {
+  const [config, setConfig] = useState<SaaSConfig>(DEFAULT_CONFIG);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    const loadConfig = async () => {
+      const saved = await db.getSystemConfig();
+      if (saved) {
+        setConfig({
           ...DEFAULT_CONFIG,
-          ...parsed,
+          ...saved,
           parameters: {
             ...DEFAULT_CONFIG.parameters,
-            ...(parsed.parameters || {})
+            ...(saved.parameters || {})
           },
           modules: {
             ...DEFAULT_CONFIG.modules,
-            ...(parsed.modules || {})
+            ...(saved.modules || {})
           }
-        };
-      } catch (e) {
-        return DEFAULT_CONFIG;
+        });
       }
-    }
-    return DEFAULT_CONFIG;
-  });
+      setIsLoaded(true);
+    };
+    loadConfig();
+  }, []);
 
   useEffect(() => {
-    localStorage.setItem('saasConfig', JSON.stringify(config));
-  }, [config]);
+    if (isLoaded) {
+      db.updateSystemConfig(config);
+    }
+  }, [config, isLoaded]);
 
   const updateConfig = (newConfig: Partial<SaaSConfig>) => {
     setConfig(prev => ({ ...prev, ...newConfig }));
