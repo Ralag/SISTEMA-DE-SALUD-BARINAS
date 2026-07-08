@@ -29,10 +29,10 @@ export default function EpidemiologyHub() {
         <div>
           <h1 className="text-2xl font-black font-display text-slate-900 dark:text-white uppercase tracking-tight flex items-center gap-2">
             <Crosshair className="text-rose-600" size={28} strokeWidth={2.5} />
-            {config.modules.epidemiology?.name || 'Sala de Guerra - Epidemiología'}
+            {config.modules.epidemiology?.appTitle || config.modules.epidemiology?.name || 'Sala de Guerra - Epidemiología'}
           </h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm mt-1 font-medium tracking-wide uppercase">
-            Vigilancia Activa Regional • MPPS Barinas
+            {config.modules.epidemiology?.welcomeMessage || 'Vigilancia Activa Regional • MPPS Barinas'}
           </p>
         </div>
         

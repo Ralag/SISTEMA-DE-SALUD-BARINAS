@@ -5,6 +5,8 @@ export interface SaaSModuleConfig {
   name: string;
   description: string;
   active: boolean;
+  appTitle?: string;
+  welcomeMessage?: string;
 }
 
 export interface SaaSConfig {
@@ -45,6 +47,7 @@ const DEFAULT_CONFIG: SaaSConfig = {
   modules: {
     home: { id: 'home', name: 'Workspace (Inicio)', description: 'Dashboard principal', active: true },
     epidemiology: { id: 'epidemiology', name: 'Epidemiología', description: 'Análisis estadístico puro y respuesta a brotes. Canal Endémico y mapas de calor.', active: true },
+    immunization: { id: 'immunization', name: 'Inmunización (PAI)', description: 'Programa Ampliado de Inmunizaciones y Cadena de Frío.', active: true },
     stats: { id: 'stats', name: 'Estadística (CEIS)', description: 'Sistema Integrado de Análisis de Datos y carga de reportes DHIS2.', active: true },
     logistics: { id: 'logistics', name: 'SEFAR (Logística)', description: 'Cadena de suministro, control de inventario y fechas de caducidad.', active: true },
     hr: { id: 'hr', name: 'Talento Humano', description: 'Gestión de turnos, guardias, ausencias y nómina de médicos y enfermeras.', active: true },

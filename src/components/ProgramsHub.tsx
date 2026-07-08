@@ -8,7 +8,7 @@ export default function ProgramsHub() {
     <div className="p-4 md:p-6 max-w-7xl mx-auto w-full min-h-full flex flex-col space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-black font-display text-slate-800 dark:text-slate-100 uppercase tracking-tight">{config.modules.programs?.name || 'Programas de Salud'}</h1>
+          <h1 className="text-2xl font-black font-display text-slate-800 dark:text-slate-100 uppercase tracking-tight">{config?.modules?.programs?.appTitle || config?.modules?.programs?.name || 'Programas de Salud'}</h1>
           <p className="text-sm text-slate-500 dark:text-slate-400">Seguimiento de Cohortes y Cumplimiento de Metas Trimestrales</p>
         </div>
         <div className="flex gap-2">

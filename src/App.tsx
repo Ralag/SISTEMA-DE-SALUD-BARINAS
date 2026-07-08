@@ -69,7 +69,7 @@ function TopNav({ toggleSidebar, isSidebarOpen, showSidebarToggle }: { toggleSid
     { name: 'Auditoría', path: '/stats/audit', icon: <ShieldAlert size={22} className="text-rose-600" />, roles: ['L1_CENTRAL'], departments: ['ESTADISTICA'] },
   ];
   const allowedApps = allApps.filter(app => {
-    if (user.level === 'ADMIN' || user.level === 'L0_STRATEGIC' || user.department === 'DES') return true;
+    if (user.level === 'ADMIN' || user.level === 'MODERATOR' || user.level === 'L0_STRATEGIC' || user.department === 'DES') return true;
     if (!app.roles.includes(user.level)) return false;
     if (app.departments && !app.departments.includes(user.department)) return false;
     return true;
@@ -198,9 +198,9 @@ function HomeRouter() {
   if (!user) return null;
 
   // Auto-redirect user to their specific hub based on department
-  if (user.level === 'MODERATOR') {
-    return <Navigate to="/admin-saas" replace />;
-  }
+  // if (user.level === 'MODERATOR') {
+  //   return <Navigate to="/admin-saas" replace />;
+  // }
   if (user.department === 'ESTADISTICA' || user.department === 'DIRECTOR_ASIC' || user.department === 'ESTADISTICA_ASIC') {
     return <Navigate to="/stats" replace />;
   }

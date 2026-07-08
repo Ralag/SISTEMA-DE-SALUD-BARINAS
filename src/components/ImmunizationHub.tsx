@@ -1,3 +1,4 @@
+import { useSaaSContext } from '../context/SaaSContext';
 import React from 'react';
 import { Syringe, Shield, Users, MapPin, Activity, Calendar, Download } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
@@ -13,14 +14,15 @@ const coverageData = Array.from({ length: 12 }, (_, i) => {
 });
 
 export default function ImmunizationHub() {
+  const { config } = useSaaSContext();
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto w-full min-h-full flex flex-col space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-black font-display text-slate-800 dark:text-slate-100 uppercase tracking-tight flex items-center gap-2">
-            <Syringe className="text-indigo-500" /> Inmunización (PAI)
+            <Syringe className="text-indigo-500" /> {config?.modules?.immunization?.appTitle || 'Inmunización (PAI)'}
           </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">Programa Ampliado de Inmunizaciones y Cadena de Frío</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">{config?.modules?.immunization?.welcomeMessage || 'Programa Ampliado de Inmunizaciones y Cadena de Frío'}</p>
         </div>
         <div className="flex gap-2">
            <button className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 px-3 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-slate-50 transition-colors flex items-center gap-2">

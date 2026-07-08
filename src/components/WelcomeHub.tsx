@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Syringe, ShieldCheck, Activity, Package, Users, Kanban, Calendar, FileText, Megaphone, CheckCircle2, AlertTriangle, TrendingUp, ChevronRight, Clock, Plus, Stethoscope, ClipboardList, BarChart3, MapPin, Layers } from 'lucide-react';
+import { Search, Syringe, ShieldCheck, Activity, Package, Users, Kanban, Calendar, FileText, Megaphone, CheckCircle2, AlertTriangle, TrendingUp, ChevronRight, Clock, Plus, Stethoscope, ClipboardList, BarChart3, MapPin, Layers, Settings } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import { useSaaSContext } from '../context/SaaSContext';
@@ -19,10 +19,11 @@ export default function WelcomeHub() {
   const isOperational = ['L3_OPERATIONAL'].includes(user.level);
 
   const allQuickAccess = [
+    { title: 'Panel Global', subtitle: 'Configuración SaaS', value: 'Admin', icon: <Settings size={20} className="text-slate-600" />, colorClass: 'slate', to: '/admin-saas', linkText: 'Ver Configuración', dept: 'ADMIN_PANEL' },
     { title: config.modules.epidemiology?.name || 'Epidemiología', subtitle: config.modules.epidemiology?.description || 'Análisis y Alertas', value: '3 Activas', icon: <Activity size={20} className="text-emerald-600" />, colorClass: 'emerald', to: '/epidemiology', linkText: 'Ver Sala de Guerra', dept: 'EPIDEMIOLOGIA' },
     { title: config.modules.stats?.name || 'Estadística (CEIS)', subtitle: config.modules.stats?.description || 'Indicadores', value: '98%', icon: <BarChart3 size={20} className="text-cyan-600" />, colorClass: 'blue', to: '/stats', linkText: 'Ver CEIS', dept: 'ESTADISTICA' },
     { title: config.modules.networks?.name || 'Red de Atención', subtitle: config.modules.networks?.description || 'Operatividad', value: '94%', icon: <Layers size={20} className="text-blue-600" />, colorClass: 'blue', to: '/networks', linkText: 'Monitorear Red', dept: 'RED_ATENCION' },
-    { title: 'Inmunización (PAI)', subtitle: 'Cobertura Mensual', value: '88.4%', icon: <Syringe size={20} className="text-indigo-600" />, colorClass: 'indigo', to: '/immunization', linkText: 'Ver Programa', dept: 'INMUNIZACION' },
+    { title: config.modules.immunization?.name || 'Inmunización (PAI)', subtitle: 'Cobertura Mensual', value: '88.4%', icon: <Syringe size={20} className="text-indigo-600" />, colorClass: 'indigo', to: '/immunization', linkText: 'Ver Programa', dept: 'INMUNIZACION' },
     { title: config.modules.sacs?.name || 'Contraloría', subtitle: config.modules.sacs?.description || 'Inspecciones SACS', value: '45', icon: <ShieldCheck size={20} className="text-rose-600" />, colorClass: 'rose', to: '/sacs', linkText: 'Ver Operativos', dept: 'SACS' },
     { title: config.modules.logistics?.name || 'SEFAR', subtitle: config.modules.logistics?.description || 'Disponibilidad Almacén', value: '78%', icon: <Package size={20} className="text-amber-600" />, colorClass: 'amber', to: '/logistics', linkText: 'Ver Inventario', dept: 'SEFAR' },
     { title: config.modules.hr?.name || 'Talento Humano', subtitle: config.modules.hr?.description || 'Personal y Guardias', value: '92%', icon: <Users size={20} className="text-orange-600" />, colorClass: 'amber', to: '/hr', linkText: 'Ver Nómina', dept: 'RRHH' },
@@ -30,7 +31,10 @@ export default function WelcomeHub() {
   ];
 
   const quickAccess = allQuickAccess.filter(app => {
-    if (user?.level === 'ADMIN' || user?.level === 'L0_STRATEGIC' || user?.department === 'DES') return true;
+    if (app.dept === 'ADMIN_PANEL' && (user?.level === 'ADMIN' || user?.level === 'MODERATOR')) return true;
+    if (app.dept === 'ADMIN_PANEL') return false;
+    
+    if (user?.level === 'ADMIN' || user?.level === 'MODERATOR' || user?.level === 'L0_STRATEGIC' || user?.department === 'DES') return true;
     if (app.dept === 'PROGRAMAS_SALUD' && ['TUBERCULOSIS', 'ITS_VIH', 'CAREMT', 'SALUD_FAMILIAR', 'SALUD_COMUNITARIA', 'MALARIOLOGIA', 'PROGRAMAS_SALUD'].includes(user?.department || '')) return true;
     return app.dept === user?.department || (app.dept === 'ESTADISTICA' && ['DIRECTOR_ASIC', 'ESTADISTICA_ASIC'].includes(user?.department || ''));
   });

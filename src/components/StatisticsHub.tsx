@@ -64,10 +64,10 @@ export default function StatisticsHub() {
             </div>
             <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100 uppercase tracking-tight flex items-center gap-2 pr-12 md:pr-0">
               <BarChart3 className="text-indigo-600" />
-              CEIS - Estadística e Información
+              {config.modules.stats?.appTitle || config.modules.stats?.name || 'CEIS - Estadística e Información'}
             </h1>
             <p className="text-slate-500 text-sm mt-1 font-medium">
-              {isRegional ? 'Sistema Integrado de Análisis de Datos (Nivel Regional)' : `Panel de Control ASIC: ${userAsic}`}
+              {config.modules.stats?.welcomeMessage || (isRegional ? 'Sistema Integrado de Análisis de Datos (Nivel Regional)' : `Panel de Control ASIC: ${userAsic}`)}
             </p>
           </div>
           <div className="flex gap-2">
