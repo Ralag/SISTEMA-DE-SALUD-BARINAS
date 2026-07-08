@@ -26,6 +26,8 @@ export default function IdentityTab() {
   const { addToast, user } = useAppContext();
   const [searchTerm, setSearchTerm] = useState('');
   const [users, setUsers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
   const [showAuditModal, setShowAuditModal] = useState(false);
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
 
@@ -144,7 +146,21 @@ export default function IdentityTab() {
 
       {/* Control Panel Actions */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div onClick={() => { addToast('Forzando cierre de todas las sesiones activas...', 'error'); db.createAuditLog({ action: 'Invalidación Global', entity: 'Todas las sesiones', details: 'Cierre forzado de sesiones', user_name: user?.name, asic: 'Admin', ip_address: '127.0.0.1' }) }} className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-between group cursor-pointer hover:border-rose-300 dark:hover:border-rose-700 transition-colors">
+        <div onClick={async () => {
+          addToast('Forzando cierre de todas las sesiones activas...', 'info');
+          try {
+            const res = await fetch('/api/admin/revoke-sessions', { method: 'POST' });
+            const data = await res.json();
+            if (data.status === 'success' || data.status === 'simulated') {
+              addToast(data.message, 'success');
+              db.createAuditLog({ action: 'Invalidación Global', entity: 'Todas las sesiones', details: 'Cierre forzado de sesiones (vía Edge Function)', user_name: user?.name, asic: 'Admin', ip_address: '127.0.0.1' });
+            } else {
+              addToast('Error: ' + data.message, 'error');
+            }
+          } catch(err) {
+            addToast('Error de conexión', 'error');
+          }
+        }} className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-between group cursor-pointer hover:border-rose-300 dark:hover:border-rose-700 transition-colors">
           <div>
             <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200">Invalidación Global</h4>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Forzar cierre de todas las sesiones</p>
@@ -154,7 +170,21 @@ export default function IdentityTab() {
           </div>
         </div>
         
-        <div onClick={() => { addToast('Se exigirá cambio de clave en el próximo inicio de sesión a todos.', 'success'); db.createAuditLog({ action: 'Rotación de Claves', entity: 'Todos los usuarios', details: 'Exigencia de cambio de clave', user_name: user?.name, asic: 'Admin', ip_address: '127.0.0.1' }) }} className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-between group cursor-pointer hover:border-amber-300 dark:hover:border-amber-700 transition-colors">
+        <div onClick={async () => {
+          addToast('Iniciando rotación de claves...', 'info');
+          try {
+            const res = await fetch('/api/admin/rotate-passwords', { method: 'POST' });
+            const data = await res.json();
+            if (data.status === 'success' || data.status === 'simulated') {
+              addToast(data.message, 'success');
+              db.createAuditLog({ action: 'Rotación de Claves', entity: 'Todos los usuarios', details: 'Exigencia de cambio de clave (vía Edge Function)', user_name: user?.name, asic: 'Admin', ip_address: '127.0.0.1' });
+            } else {
+              addToast('Error: ' + data.message, 'error');
+            }
+          } catch(err) {
+            addToast('Error de conexión', 'error');
+          }
+        }} className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-between group cursor-pointer hover:border-amber-300 dark:hover:border-amber-700 transition-colors">
           <div>
             <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200">Rotación de Claves</h4>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Exigir cambio de clave general</p>
